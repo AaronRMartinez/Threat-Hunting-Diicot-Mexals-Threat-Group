@@ -1,1 +1,1 @@
-# Threat-Hunting-Diicot-Mexals-Threat-Group
+# Threat Hunting: Diicot/Mexals Threat Group
