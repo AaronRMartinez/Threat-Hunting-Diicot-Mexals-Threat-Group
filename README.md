@@ -705,6 +705,8 @@ The query yielded several notable logs. To confirm whether the queried file was 
 
 * SHA256: `a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f`
 
+![image](https://github.com/user-attachments/assets/94aac402-1cba-43df-b5dd-b2d2223706b3)
+
 Using the following query, the next step was to identify which devices contained the crontab.
 
 Query
@@ -749,7 +751,11 @@ fi
 ```
 
 The script silently fetches from the two URLs, `196[.]251[.]114[.]67/.x/black3` and `digital[.]digitaldatainsights[.]org/.x/black3` attempting to fetch another possible script called `black3`. Having previously read the Wiz’s report on Diicot’s malware campaigns, the domain is associated with the Bash script used in the `.c` cron job. The URL `digital[.]digitaldatainsights[.]org/.x/black3` is explicitly referenced as the domain from which the malicious script initiates a download. Analyzing the IP address
-`196[.]251[.]114[.]67` from the script using VirusTotal revealed that it has also been flagged for malicious activity. Once the script was identified as being malicious in nature, the associated SHA256 hash value was extracted for additional analysis.
+`196[.]251[.]114[.]67` from the script using VirusTotal revealed that it has also been flagged for malicious activity. 
+
+![image](https://github.com/user-attachments/assets/3ddf2fbe-2213-442a-82cf-0086a79ae1bd)
+
+Once the script was identified as being malicious in nature, the associated SHA256 hash value was extracted for additional analysis.
 
 * SHA256: `1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093`
 
