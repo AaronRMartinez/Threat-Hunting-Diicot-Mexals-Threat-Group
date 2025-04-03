@@ -85,10 +85,10 @@ The query returned the SHA-256 hashes for both files, which were then analyzed u
 malicious file.
 
 **diicot**
-SHA256: `9462261543bfaf008f4748c76a7a2aec95d67f73315d1adea1833d51f9ec29f6`
+* SHA256: `9462261543bfaf008f4748c76a7a2aec95d67f73315d1adea1833d51f9ec29f6`
 
 **kauk**
-SHA256: `11d43b9ef1678a889cfbca33ca13314d07824753965cafb28d4030644a2c5ccd`
+* SHA256: `11d43b9ef1678a889cfbca33ca13314d07824753965cafb28d4030644a2c5ccd`
 
 Revisiting the script used in the SSH brute force attack, the script executed both a `curl` and a `wget` command to download a file from the IP address `85[.]31[.]47[.]99`. The script's redundancy on the IP address emphasized the importance of retrieving the file from the designated IP. Analyzing the IP address found in the script using VirusTotal revealed that `85[.]31[.]47[.]99` is classified as a malicious site. Navigating to the “Relations” section on VirusTotal, several domains associated with the malicious IP address were found.
 
