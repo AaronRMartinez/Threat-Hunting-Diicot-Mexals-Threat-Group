@@ -436,13 +436,7 @@ Query
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
 | where SHA256 in
-("3c1f9f07eacc2f057a609c955e2fde38493521268f3493717ffa5a31b261f3ef",
-"99f9ec2cd5cee445830b5500fecbb37861a06c50b174d0d8635c14ffeb236c9d",
-"6ddf688bdf16a1d465aef954ff90b372dacd8162bac2c7797ff7b6b4f20afcbc",
-"268132cf61dfb55c5ebb7ef34a58c915442949b92f645c6f28887ceca5c6c19d",
-"2f70458e2b77fba49697e3fbba8bea53e27e7ca010fd92ca3919b819d3aee160",
-"0e817a2325c215997de15851152a66924874739eeff5da4b434e5d36c83a76eb",
-"75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19")
+("3c1f9f07eacc2f057a609c955e2fde38493521268f3493717ffa5a31b261f3ef", "99f9ec2cd5cee445830b5500fecbb37861a06c50b174d0d8635c14ffeb236c9d", "6ddf688bdf16a1d465aef954ff90b372dacd8162bac2c7797ff7b6b4f20afcbc", "268132cf61dfb55c5ebb7ef34a58c915442949b92f645c6f28887ceca5c6c19d", "2f70458e2b77fba49697e3fbba8bea53e27e7ca010fd92ca3919b819d3aee160", "0e817a2325c215997de15851152a66924874739eeff5da4b434e5d36c83a76eb", "75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19")
 | distinct DeviceName
 ```
 
@@ -491,13 +485,13 @@ DeviceNetworkEvents
 
 Diicot has been documented modifying the crontab to schedule recurring tasks to gain persistence on a system. This is done with the main, malicious `Update` payload. Diicot typically creates four different tasks to gain persistence on a system. The documented tasks Diicot is know to use are,
 
-1. Update - re-runs the payload itself
+1. **Update** - re-runs the payload itself
 
-2. History - a Bash script is used to check if “Update” is running and runs it again if needed
+2. **History** - a Bash script is used to check if “Update” is running and runs it again if needed
 
-3. .b - a Bash script is used to check if “cache” is running and runs it again if needed
+3. **.b** - a Bash script is used to check if “cache” is running and runs it again if needed
 
-4. .c - downloads and runs a bash script from the URL: `digital[.]digitaldatainsights[.]org/.x/black3`
+4. **.c** - downloads and runs a bash script from the URL: `digital[.]digitaldatainsights[.]org/.x/black3`
 
 Aware that the crontab is being leveraged by the threat actor for persistence, I queried for initiating process command lines that contained the term `crontab`.
 
@@ -513,42 +507,73 @@ DeviceProcessEvents
 ```
 
 Several commands were returned that indicated both highly suspicious activity and scripts being conducted on numerous systems.An example of commands executing cron jobs for persistence is:
-sh -c "sed -i '/\/etc\/cron.hourly\/gcc.sh/d' /etc/crontab && echo '*/3 * * * * root
-/etc/cron.hourly/gcc.sh' >> /etc/crontab"
-Explanation
-● /\/etc\/cron.hourly\/gcc.sh/d - tells sed to delete any line that contains
-/etc/cron.hourly/gcc.sh in it
-● d - command means "delete the matching line”
-● echo '*/3 * * * * root /etc/cron.hourly/gcc.sh' >> /etc/crontab - command appends a
-new cron job to the /etc/crontab file and runs the scheduled task every 3 minutes under
-the “root” user
+
+```bash
+sh -c "sed -i '/\/etc\/cron.hourly\/gcc.sh/d' /etc/crontab && echo '*/3 * * * * root /etc/cron.hourly/gcc.sh' >> /etc/crontab"
+```
+Script Actions:
+
+* `/\/etc\/cron.hourly\/gcc.sh/d` - tells `sed` to delete any line that contains `/etc/cron.hourly/gcc.sh` in it
+* `d` - command means "delete the matching line”
+* `echo '*/3 * * * * root /etc/cron.hourly/gcc.sh' >> /etc/crontab` - command appends a new cron job to the `/etc/crontab` file and runs the scheduled task every 3 minutes under the `root` user
+
 The devices that have been logged executing this command with the execution time, are:
-Time: 2025-02-26T00:23:35.944642Z
-Device: linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-02-26T04:20:39.481444Z
-Device: linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-02-27T22:30:28.265571Z
-Device: lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-03T22:19:08.672632Z
-Device: linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-06T22:34:07.086385Z
-Device: linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-20T04:27:05.576081Z
-Device: linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Recognizing that the threat actor was replacing the original gcc.sh file with a potentially
-malicious one, inspection of the newly created gcc.sh provided the relevant SHA256 hash,
-SHA256: 74d31cac40d98ee64df2a0c29ceb229d12ac5fa699c2ee512fc69360f0cf68c5
-The gcc.sh payloadss are flagged as malicious by VirusTotal with the file being labeled a
-Trojan.
-To double-check which systems were affected, the following query was executed,
+
+Time: `2025-02-26T00:23:35.944642Z`
+
+Device: `linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-02-26T04:20:39.481444Z`
+
+Device: `linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-02-27T22:30:28.265571Z`
+
+Device: `lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-03T22:19:08.672632Z`
+
+Device: `linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-06T22:34:07.086385Z`
+
+Device: `linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-20T04:27:05.576081Z`
+
+Device: `linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Recognizing that the threat actor was replacing the original `gcc.sh` file with a potentially malicious one, inspection of the newly created `gcc.sh` provided the relevant SHA256 hash,
+
+SHA256: `74d31cac40d98ee64df2a0c29ceb229d12ac5fa699c2ee512fc69360f0cf68c5`
+
+The `gcc.sh` payloads are flagged as malicious by VirusTotal with the file being labeled a Trojan. To double-check which systems were affected, the following query was executed,
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
-| where SHA256 ==
-"74d31cac40d98ee64df2a0c29ceb229d12ac5fa699c2ee512fc69360f0cf68c5"
+// Filter for matching "gcc.sh" SHA256 hash values
+| where SHA256 == "74d31cac40d98ee64df2a0c29ceb229d12ac5fa699c2ee512fc69360f0cf68c5"
 | order by Timestamp asc
 | project Timestamp, DeviceName, ActionType, InitiatingProcessFileName
+```
+
 The devices and the time of creation of the Trojans are as follows,
+
 Time: 2025-02-25T04:20:37.673433Z
 Device: ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
 Time: 2025-02-26T00:23:35.936362Z
@@ -563,6 +588,7 @@ Time: 2025-03-06T22:34:07.076726Z
 Device: linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
 Time: 2025-03-20T04:27:05.565158Z
 Device: linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+
 The creation of the gcc.sh Trojan on the systems were all initiated by the same file name called
 ygljglkjgfg0. Referencing the SHA256 hash of ygljglkjgfg0 indicated the files are classified
 “XorDDoS” Trojans on VirusTotal.
