@@ -168,33 +168,62 @@ DeviceFileEvents
 
 The query returned three more entries that shared the same file name, folder path, and hashes. The `Update` file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
 
-- Device Name: `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
-- Time: `2025-03-04T17:52:53.939295Z`
-- Initiating Process Account Domain: `linux-program-fix`
-- Initiating Process Account Name: `root`
-- Initiating Process File Name: `mnflegnm`
-- Initiating Process Command Line: `./MNFleGNm`
+---
+Device Name: `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+Time: `2025-03-04T17:52:53.939295Z`
+
+Initiating Process Account Domain: `linux-program-fix`
+
+Initiating Process Account Name: `root`
+
+Initiating Process File Name: `mnflegnm`
+
+Initiating Process Command Line: `./MNFleGNm`
+
+---
 
 Device Name: `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
 Time: `2025-03-07T21:25:14.297296Z`
+
 Initiating Process Account Domain: `linux-programatic-ajs`
+
 Initiating Process Account Name: `root`
+
 Initiating Process File Name: `aqseumky`
+
 Initiating Process Command Line: `./AqsEUmKy`
 
+---
+
 Device Name: `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
 Time: `2025-03-13T05:45:43.568608Z`
+
 Initiating Process Account Domain: `linuxvmdavid`
+
 Initiating Process Account Name: `root`
+
 Initiating Process File Name: `ogbeupss`
+
 Initiating Process Command Line: `./oGBeupSS`
 
+---
+
 Device Name: `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
 Time: `2025-03-14T17:47:55.121801Z`
+
 Initiating Process Account Domain: `sakel-lunix-2`
+
 Initiating Process Account Name: `root`
+
 Initiating Process File Name: `upzbubnv`
+
 Initiating Process Command Line: `./UpzBUBnv`
+
+---
 
 To utilize reverse shells in their malware campaigns, Diicot typically uses another malicious file called `/var/tmp/cache`. Which functions as a reverse shell that gives the threat actor a direct remote connection to the compromised machine. Suspecting that the threat actor within the CyberRange could be employing a similar payload, the payload was searched within the CyberRange network.
 
