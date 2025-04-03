@@ -946,5 +946,10 @@ Miner
 
 The script specifically kills processes associated with other crypto miners (`xmrig`, `cnrig`, `java`) and the script contains several instances of a payload download. Both the domain and the URL found in the download command (`dinpasiune[.]com`, `85[.]31[.]47[.]99`) are classified as malicious by VirusTotal.
 
+![image](https://github.com/user-attachments/assets/9914d08e-2f2f-4ad1-93ea-50624a99b68d)
+
+![image](https://github.com/user-attachments/assets/d0c4da76-45f0-445e-ab0f-f69f92406a76)
+
+
 Conducting OSINT on the domain name revealed threat intelligence indicating that the domain as indeed linked to cryptojacking activity.
 (https://x.com/r3dbU7z/status/1648586927266832384/photo/1)
