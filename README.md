@@ -5,13 +5,13 @@
 
 ## Executive Summary
 
-This report summarizes the findings of a threat hunting investigation conducted in response to a Microsoft Azure Safeguards Team abuse notice. Microsoft flagged the IP address '20.81.228.191', associated with the Azure VM 'sakel-lunix-2', for brute-force activity. The investigation confirms the abuse report, identifies the initial compromise point, and details the attacker’s activity within the CyberRange network, including persistence mechanisms, deployed payloads, C2 communication, and lateral movement.
+This report summarizes the findings of a threat hunting investigation conducted in response to a Microsoft Azure Safeguards Team abuse notice. Microsoft flagged the IP address "20.81.228.191", associated with the Azure VM "sakel-lunix-2", for brute-force activity. The investigation confirms the abuse report, identifies the initial compromise point, and details the attacker’s activity within the CyberRange network, including persistence mechanisms, deployed payloads, C2 communication, and lateral movement.
 
 ## Validation of Abuse Claim
 
 ### Hypothesis:
 
-The virtual machine with public IP '20[.]81[.]228[.]191' has been compromised and is actively conducting brute-force attacks on external public systems from the CyberRange network.
+The virtual machine with public IP "20[.]81[.]228[.]191" has been compromised and is actively conducting brute-force attacks on external public systems from the CyberRange network.
 
 <u>Query</u>
 
@@ -22,8 +22,8 @@ DeviceInfo
 | project Timestamp, DeviceName, PublicIP, OSPlatform, LoggedOnUsers
 ```
 
-Using the the public IP in a query, the device name of the suspected system was discovered to be, 'sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net'
-After identifying the device associated with the flagged IP address, the next step was to verify if a SSH brute force attack was conducted from the suspected device. Using the device’s name in a new query, the 'DeviceNetworkEvents' table was searched.
+Using the the public IP in a query, the device name of the suspected system was discovered to be, "sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net"
+After identifying the device associated with the flagged IP address, the next step was to verify if a SSH brute force attack was conducted from the suspected device. Using the device’s name in a new query, the "DeviceNetworkEvents" table was searched.
 
 <u>Query</u>
 
@@ -50,7 +50,7 @@ DeviceNetworkEvents
 | project Timestamp, ActionType, RemoteIP, RemotePort, RemoteIPType,InitiatingProcessCommandLine
 ```
 
-Network traffic consistent with an SSH brute-force attack was observed. The suspected device, 'sakel-lunix-2', began its sequential IP scanning at '2025-03-14T17:46:53.755809Z'. Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
+Network traffic consistent with an SSH brute-force attack was observed. The suspected device, "sakel-lunix-2", began its sequential IP scanning at "2025-03-14T17:46:53.755809Z". Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
 
 <u>Script</u>:
 
@@ -60,8 +60,8 @@ Network traffic consistent with an SSH brute-force attack was observed. The susp
 
 <u>Script Actions</u>
 
-● Deletes and recreates '/var/tmp/Documents', likely to remove traces of previous files
-● Modifies file attributes using 'chattr -iae', which can make files immutable
+● Deletes and recreates "/var/tmp/Documents", likely to remove traces of previous files
+● Modifies file attributes using "chattr -iae", which can make files immutable
 ● Moves potentially malicious files ('diicot', 'kuak') into '/var/tmp/Documents', renames them, and makes them executable
 ● Removes crontab entries ('crontab -r'), possibly to remove traces of previous persistence mechanisms
 ● Deletes SSH authorized keys ('~/.ssh/authorized_keys'), likely preventing backdoor access removal
