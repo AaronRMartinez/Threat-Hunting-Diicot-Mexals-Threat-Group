@@ -574,44 +574,73 @@ DeviceFileEvents
 
 The devices and the time of creation of the Trojans are as follows,
 
-Time: 2025-02-25T04:20:37.673433Z
-Device: ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-02-26T00:23:35.936362Z
-Device: linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-02-26T04:20:39.477883Z
-Device: linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-02-27T22:30:28.262111Z
-Device: lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-03T22:19:08.664826Z
-Device: linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-06T22:34:07.076726Z
-Device: linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Time: 2025-03-20T04:27:05.565158Z
-Device: linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+Time: `2025-02-25T04:20:37.673433Z`
 
-The creation of the gcc.sh Trojan on the systems were all initiated by the same file name called
-ygljglkjgfg0. Referencing the SHA256 hash of ygljglkjgfg0 indicated the files are classified
-“XorDDoS” Trojans on VirusTotal.
-Referring back to documented Diicot persistence techniques, I focused on threat hunting for
-documented cron jobs that the threat group has been observed to utilize in their malware
-campaigns. The DeviceFileEvents table was searched to locate the .b cron job, which Diicot
-commonly uses for persistence.
+Device: `ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-02-26T00:23:35.936362Z`
+
+Device: `linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-02-26T04:20:39.477883Z`
+
+Device: `linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-02-27T22:30:28.262111Z`
+
+Device: `lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-03T22:19:08.664826Z`
+
+Device: `linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-06T22:34:07.076726Z`
+
+Device: `linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+Time: `2025-03-20T04:27:05.565158Z`
+
+Device: `linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+---
+
+The creation of the `gcc.sh` Trojan on the systems were all initiated by the same file name called `ygljglkjgfg0`. Referencing the SHA256 hash of `ygljglkjgfg0` indicated the files are classified `XorDDoS` Trojans on VirusTotal. Referring back to documented Diicot persistence techniques, I focused on threat hunting for documented cron jobs that the threat group has been observed to utilize in their malware campaigns. The `DeviceFileEvents` table was searched to locate the `.b` cron job, which Diicot commonly uses for persistence.
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
 | where FileName == ".b"
 | order by Timestamp asc
-The query yielded several notable logs. To confirm whether the queried file was malicious or
-associated with Diicot’s “Update” file, its SHA256 hash was referenced in a VirusTotal query.
-VirusTotal associated the discovered .b task as one of the embedded files found in the main
-malicious payload Update. The SHA256 hash of the .b file is,
-SHA256: a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f
+```
+
+The query yielded several notable logs. To confirm whether the queried file was malicious or associated with Diicot’s `Update` file, its SHA256 hash was referenced in a VirusTotal query. VirusTotal associated the discovered `.b` task as one of the embedded files found in the main malicious payload Update. The SHA256 hash of the `.b` file is,
+
+SHA256: `a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f`
+
 Using the following query, the next step was to identify which devices contained the crontab.
+
 Query
+
+```kql
 DeviceFileEvents
-| where SHA256 ==
-"a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f"
+| where SHA256 == "a9a4f021f91d1f35888c4e2fe7d2af2d458de8c8aba4f5815f1ed3125650c28f"
 | distinct DeviceName
+```
+
 The following devices were discovered to have contained the .b file,
 1. linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
 2. linux-programatic-ajs
