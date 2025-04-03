@@ -787,6 +787,9 @@ DeviceProcessEvents
 | distinct ProcessCommandLine
 ```
 
+![C2SuccessReports](https://github.com/user-attachments/assets/a9143c6c-afaf-48b9-9781-1230e868bdcf)
+
+
 A quick inspection of the IP address `196[.]251[.]73[.]38` (referenced earlier in the report) with VirusTotal indicated that the address was classified as malicious.
 
 ### SSH Brute Force (T1110.001)
@@ -801,6 +804,9 @@ DeviceNetworkEvents
 | order by Timestamp asc
 | project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType, InitiatingProcessFileName
 ```
+
+![bisisSSHAttack](https://github.com/user-attachments/assets/daa12a36-d7ab-42db-99eb-d6931df05bc7)
+
 
 ### Cryptomining (T1496.001)
 
