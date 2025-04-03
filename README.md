@@ -151,9 +151,9 @@ DeviceFileEvents
 
 The log revealed that this file was initiated by the account name `root` in the account domain `sakel-linux-2`. The file’s initiating file process name was `upzbubnv` with the corresponding command line: `./UpzBUBnv`. The hash values of the `Update` file are the following,
 
-SHA1: `9f1bbb9be5024d24c64b597abe7ede2c8feaccd7`
-SHA256: `5078b85ae87a55d0299682e3123d5c7a804df03266eba49fd404a9cec98470ba`
-MD5: `0342a25887a6943cd325ccda19d3f0df`
+* SHA1: `9f1bbb9be5024d24c64b597abe7ede2c8feaccd7`
+* SHA256: `5078b85ae87a55d0299682e3123d5c7a804df03266eba49fd404a9cec98470ba`
+* MD5: `0342a25887a6943cd325ccda19d3f0df`
 
 These hashes have yet to be labeled as malicious by public online services such as VirusTotal. This is likely a result of a known Diicot technique in which they modify a file’s UPX header. Diicot obfuscates the group’s payloads UPX headers `T1027.002` and corrupts the checksum information in the headers. These techniques are meant to bypass analysis tools and avoid detection by automated systems. Understanding that this was possibly the main payload Diicot utilized, I expanded my search to inspect other systems in the network from 5 months ago with the following query,
 
@@ -168,12 +168,12 @@ DeviceFileEvents
 
 The query returned three more entries that shared the same file name, folder path, and hashes. The `Update` file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
 
-Device Name: `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
-Time: `2025-03-04T17:52:53.939295Z`
-Initiating Process Account Domain: `linux-program-fix`
-Initiating Process Account Name: `root`
-Initiating Process File Name: `mnflegnm`
-Initiating Process Command Line: `./MNFleGNm`
+- Device Name: `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+- Time: `2025-03-04T17:52:53.939295Z`
+- Initiating Process Account Domain: `linux-program-fix`
+- Initiating Process Account Name: `root`
+- Initiating Process File Name: `mnflegnm`
+- Initiating Process Command Line: `./MNFleGNm`
 
 Device Name: `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 Time: `2025-03-07T21:25:14.297296Z`
