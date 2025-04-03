@@ -396,6 +396,8 @@ DeviceFileEvents
 
 Interestingly, the returned logs revealed seven distinct SHA256 hashes present on all known compromised systems hosting. The hashes were then cross referenced using VirusTotal and the results were mixed. Some of the hashes were classified as malicious, while others were not. Possibly indicating that publicly, undetected malware was present in some systems. The affected devices were as followed,
 
+Devices:
+
 1. `ff-vm-lx-224-base.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 
 2. `linux-vm-vulnerablity-test.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
@@ -466,46 +468,51 @@ The query returned nine devices that had a file containing at least one of the X
 
 ## Diicot Techniques
 
-File Obfuscation (T1027.002)
-As previously mentioned, Diicot uses file obfuscation to obfuscate the UPX headers of their
-payloads. For example, the malicious "Update" file's UPX header has been observed to be
-deliberately obfuscated to evade detection by analysis tools and automated systems.
-Reverse Shell
-Diicot is known to employ reverse shells in their malware campaigns. This functionality is
-typically done through one of the payloads dropped on the compromised system. Once the
-payload is executed, a reverse shell connects back to the attacker’s command-and-control (C2)
-server. Allowing the attacker to execute arbitrary commands remotely on the infected machine.
-The “cache” files served as reverse shells in this incident, attempting to connect to Diicot’s C2
-server. Filtering the network logs in DeviceNetworkEvents for logs where the cache file was
-the initiating file, returned activity resembling reverse shell activity.
+### File Obfuscation (T1027.002)
+
+As previously mentioned, Diicot uses file obfuscation to obfuscate the UPX headers of their payloads. For example, the malicious `Update` file's UPX header has been observed to be deliberately obfuscated to evade detection by analysis tools and automated systems.
+
+### Reverse Shell
+
+Diicot is known to employ reverse shells in their malware campaigns. This functionality is typically done through one of the payloads dropped on the compromised system. Once the
+payload is executed, a reverse shell connects back to the attacker’s command-and-control (C2) server. Allowing the attacker to execute arbitrary commands remotely on the infected machine. The `cache` files served as reverse shells in this incident, attempting to connect to Diicot’s C2 server. Filtering the network logs in `DeviceNetworkEvents` for logs where the cache file was the initiating file, returned activity resembling reverse shell activity.
+
 Query
+
+```kql
 DeviceNetworkEvents
+// Filter for network connections initiated by the "cache" payload
 | where InitiatingProcessFileName contains "cache"
 | order by Timestamp asc
-| project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType,
-InitiatingProcessFileName
-Persistence Mechanism (T1053.003)
-Diicot has been documented modifying the crontab to schedule recurring tasks to gain
-persistence on a system. This is done with the main, malicious “Update” payload. Diicot
-typically creates four different tasks to gain persistence on a system. The documented tasks
-Diicot is know to use are,
+| project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType, InitiatingProcessFileName
+```
+
+### Persistence Mechanism (T1053.003)
+
+Diicot has been documented modifying the crontab to schedule recurring tasks to gain persistence on a system. This is done with the main, malicious `Update` payload. Diicot typically creates four different tasks to gain persistence on a system. The documented tasks Diicot is know to use are,
+
 1. Update - re-runs the payload itself
-2. History - a Bash script is used to check if “Update” is running and runs it again if
-needed
+
+2. History - a Bash script is used to check if “Update” is running and runs it again if needed
+
 3. .b - a Bash script is used to check if “cache” is running and runs it again if needed
-4. .c - downloads and runs a bash script from the URL:
-digital[.]digitaldatainsights[.]org/.x/black3
-Aware that the crontab is being leveraged by the threat actor for persistence, I queried initiating
-process command lines that contained the term “crontab.”
+
+4. .c - downloads and runs a bash script from the URL: `digital[.]digitaldatainsights[.]org/.x/black3`
+
+Aware that the crontab is being leveraged by the threat actor for persistence, I queried for initiating process command lines that contained the term `crontab`.
+
 Query
+
+```kql
 DeviceProcessEvents
 | where Timestamp >= datetime(2024-11-01)
+// Filtering for command lines involving cron jobs
 | where InitiatingProcessCommandLine contains "crontab"
 | order by Timestamp asc
 | distinct InitiatingProcessCommandLine
-Several commands were returned that indicated both highly suspicious activity and scripts being
-conducted on numerous systems.An example of commands executing cron jobs for persistence
-is:
+```
+
+Several commands were returned that indicated both highly suspicious activity and scripts being conducted on numerous systems.An example of commands executing cron jobs for persistence is:
 sh -c "sed -i '/\/etc\/cron.hourly\/gcc.sh/d' /etc/crontab && echo '*/3 * * * * root
 /etc/cron.hourly/gcc.sh' >> /etc/crontab"
 Explanation
