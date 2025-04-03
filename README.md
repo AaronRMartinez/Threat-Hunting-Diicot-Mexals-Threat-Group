@@ -60,15 +60,15 @@ Network traffic consistent with an SSH brute-force attack was observed. The susp
 
 <u>Script Actions</u>
 
-● Deletes and recreates `/var/tmp/Documents`, likely to remove traces of previous files
-● Modifies file attributes using `chattr -iae`, which can make files immutable
-● Moves potentially malicious files (`diicot`, `kuak`) into `/var/tmp/Documents`, renames them, and makes them executable
-● Removes crontab entries (`crontab -r`), possibly to remove traces of previous persistence mechanisms
-● Deletes SSH authorized keys (`~/.ssh/authorized_keys`), likely preventing backdoor access removal
-● Kills various processes (`Opera`, `cnrig`, `java`, `xmrig`)
-● Downloads a file (`.balu`) from `85[.]31[.]47[.]99` and executes it under the name cache
-● Clears command history (`history -c`, `rm -rf .bash_history`)
-● Deletes `/tmp/cache`, likely removing execution traces
+* Deletes and recreates `/var/tmp/Documents`, likely to remove traces of previous files
+* Modifies file attributes using `chattr -iae`, which can make files immutable
+* Moves potentially malicious files (`diicot`, `kuak`) into `/var/tmp/Documents`, renames them, and makes them executable
+* Removes crontab entries (`crontab -r`), possibly to remove traces of previous persistence mechanisms
+* Deletes SSH authorized keys (`~/.ssh/authorized_keys`), likely preventing backdoor access removal
+* Kills various processes (`Opera`, `cnrig`, `java`, `xmrig`)
+* Downloads a file (`.balu`) from `85[.]31[.]47[.]99` and executes it under the name cache
+* Clears command history (`history -c`, `rm -rf .bash_history`)
+* Deletes `/tmp/cache`, likely removing execution traces
 
 Analyzing the script reveals several noteworthy actions. It references two non-native executable files, `diicot` and `kuak`, and moves them to a system temporary directory. Since `/var/tmp/` is both writable and temporary, threat actors commonly use it to store and execute malicious files without requiring elevated privileges. Verifying whether the `diicot` or `kuak` files were malicious or not became imperative. To inspect both files, a query was executed using the `DeviceFileEvents` table and file names to retrieve their respective SHA256 hash values for analysis.
 
