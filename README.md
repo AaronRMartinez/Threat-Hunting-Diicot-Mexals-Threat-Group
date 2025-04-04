@@ -41,7 +41,6 @@ DeviceNetworkEvents
 
 ![SSHBruteForceActivity](https://github.com/user-attachments/assets/1b8b2ff9-45f2-4691-8235-8b95085ce74b)
 
-
 Thousands of network logs indicating a possible SSH brute force attack were uncovered. However, to conclusively determine that an attack originated from the CyberRange that targeted public IP addresses, further analysis was needed. A new query was created that excluded network traffic directed to the private IPs in the CyberRange.
 
 <u>Query</u>
@@ -58,6 +57,7 @@ DeviceNetworkEvents
 
 ![image](https://github.com/user-attachments/assets/f6acfd4e-b416-4161-9f4e-86ce5139ccbc)
 
+![SSHAttackPublicIPs](https://github.com/user-attachments/assets/efc71126-d199-4a92-b1f0-810776789950)
 
 Network traffic consistent with an SSH brute-force attack was observed. The suspected device, `sakel-lunix-2`, began its sequential IP scanning at `2025-03-14T17:46:53.755809Z`. Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
 
