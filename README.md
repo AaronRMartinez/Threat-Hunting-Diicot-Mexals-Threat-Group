@@ -22,6 +22,9 @@ DeviceInfo
 | project Timestamp, DeviceName, PublicIP, OSPlatform, LoggedOnUsers
 ```
 
+![image](https://github.com/user-attachments/assets/321e384c-caf2-4fe9-95fe-8876066c3337)
+
+
 Using the the public IP in a query, the device name of the suspected system was discovered to be, `sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 After identifying the device associated with the flagged IP address, the next step was to verify if a SSH brute force attack was conducted from the suspected device. Using the device’s name in a new query, the `DeviceNetworkEvents` table was searched.
 
@@ -36,6 +39,9 @@ DeviceNetworkEvents
 | project Timestamp, ActionType, RemoteIP, RemotePort, InitiatingProcessCommandLine
 ```
 
+![SSHBruteForceActivity](https://github.com/user-attachments/assets/1b8b2ff9-45f2-4691-8235-8b95085ce74b)
+
+
 Thousands of network logs indicating a possible SSH brute force attack were uncovered. However, to conclusively determine that an attack originated from the CyberRange that targeted public IP addresses, further analysis was needed. A new query was created that excluded network traffic directed to the private IPs in the CyberRange.
 
 <u>Query</u>
@@ -49,6 +55,9 @@ DeviceNetworkEvents
 | order by Timestamp asc
 | project Timestamp, ActionType, RemoteIP, RemotePort, RemoteIPType,InitiatingProcessCommandLine
 ```
+
+![image](https://github.com/user-attachments/assets/f6acfd4e-b416-4161-9f4e-86ce5139ccbc)
+
 
 Network traffic consistent with an SSH brute-force attack was observed. The suspected device, `sakel-lunix-2`, began its sequential IP scanning at `2025-03-14T17:46:53.755809Z`. Network logs show that the VM sent over 30,000 connection requests to other systems on port 22. And a closer inspection of the initiating process’s command line revealed a script executing the activity.
 
@@ -107,9 +116,13 @@ Analyzing the script reveals several noteworthy actions. It references two non-n
 ```kql
 DeviceFileEvents
 | where DeviceName == "sakel-lunix-2.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net"
+// Filtering for the non-native executables found in the ./network script
 | where FileName has_any ("diicot", "kuak")
 | order by Timestamp asc
 ```
+
+![image](https://github.com/user-attachments/assets/749eff92-6a4a-40ac-960c-c2bdbaa757c4)
+
 
 The query returned the SHA-256 hashes for both files, which were then analyzed using the online public service VirusTotal. The analysis of both hashes confirmed the presence of a
 malicious file.
@@ -117,8 +130,13 @@ malicious file.
 **diicot**
 * SHA256: `9462261543bfaf008f4748c76a7a2aec95d67f73315d1adea1833d51f9ec29f6`
 
+![image](https://github.com/user-attachments/assets/37b78e42-3fad-413b-9995-983613977983)
+
+
 **kauk**
 * SHA256: `11d43b9ef1678a889cfbca33ca13314d07824753965cafb28d4030644a2c5ccd`
+
+![image](https://github.com/user-attachments/assets/f0e08a5d-2c5f-417a-8e67-9196b6a73602)
 
 Revisiting the script used in the SSH brute force attack, the script executed both a `curl` and a `wget` command to download a file from the IP address `85[.]31[.]47[.]99`. The script's redundancy on the IP address emphasized the importance of retrieving the file from the designated IP. Analyzing the IP address found in the script using VirusTotal revealed that `85[.]31[.]47[.]99` is classified as a malicious site. Navigating to the “Relations” section on VirusTotal, several domains associated with the malicious IP address were found.
 
@@ -126,6 +144,9 @@ Revisiting the script used in the SSH brute force attack, the script executed bo
 
 - digitaldatainsights[.]org
 - digital[.]digitaldatainsights[.]org
+
+![image](https://github.com/user-attachments/assets/76b116a7-9884-4faa-b201-44dfabd7e2d8)
+
 
 The `DeviceNetworkEvents` table was queried to determine whether the compromised system had successfully connected to the specified IP address. A thorough inspection of the network logs revealed that no successful connection had occurred. Concluding that no successful connection had occurred, the domain associated with the IP address was used in several queries to search across multiple log tables. Another script was found in the `DeviceEvents` table that explicitly referenced the domain name in the code. The script discovered:
 
