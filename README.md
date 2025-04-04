@@ -364,7 +364,11 @@ DeviceNetworkEvents
 
 ![image](https://github.com/user-attachments/assets/d0726012-db88-4d17-b4f3-22fa2813e0e7)
 
-A total of 22 connection requests were observed to the remote IP address `87[.]120[.]114[.]219`, which has been identified as one of Diicot’s command-and-control (C2) servers. VirusTotal was used to verify that the IP address is affiliated with the Diicot malware group. Another malicious file associated with the same Diicot malware campaign, often found alongside the malicious `Update` and `cache` files, is `.bisis`. The `.bisis` payload has a documented folder path of `/var/tmp/.update-logs/.bisis`. Thos malicious file is designed to be a scanner for banner grabbing and identifying systems running OpenSSH. It downloads an IP list from hardcoded URLs, scans port 22 on remote machines for SSH banners and inspects the received responses to discover machines with OpenSSH. Threat actors typically exploit weak SSH credentials to gain an initial access vector into an environment. Using a similar query to the previous one, I inspected all systems in the network starting from November 1, 2024.
+A total of 22 connection requests were observed to the remote IP address `87[.]120[.]114[.]219`, which has been identified as one of Diicot’s command-and-control (C2) servers. VirusTotal was used to verify that the IP address is affiliated with the Diicot malware group. 
+
+![image](https://github.com/user-attachments/assets/019dd201-a530-4070-8c43-8ee7f4c499f9)
+
+Another malicious file associated with the same Diicot malware campaign, often found alongside the malicious `Update` and `cache` files, is `.bisis`. The `.bisis` payload has a documented folder path of `/var/tmp/.update-logs/.bisis`. Thos malicious file is designed to be a scanner for banner grabbing and identifying systems running OpenSSH. It downloads an IP list from hardcoded URLs, scans port 22 on remote machines for SSH banners and inspects the received responses to discover machines with OpenSSH. Threat actors typically exploit weak SSH credentials to gain an initial access vector into an environment. Using a similar query to the previous one, I inspected all systems in the network starting from November 1, 2024.
 
 Query
 
@@ -376,6 +380,8 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 | order by Timestamp asc
 ```
+
+![BisisMaliciousFile](https://github.com/user-attachments/assets/0cb06188-ed5d-451f-907b-7d7a4eda9eb7)
 
 The query returned four logs identifying devices that contained the malicious `Update` payload, also held the `.bisis` file.
 
@@ -394,6 +400,8 @@ MD5: `5e12f81d5f949dbbd24ab82990a4bc5b`
 SHA1: `7f65f650fb8bbc48e803af72b236ebd2f03095a6`
 
 SHA256: `2828ca39e2a5b0fd3b0968bc75b67b4c587a49c13929a6cb050b0989ee01cd22`
+
+![image](https://github.com/user-attachments/assets/16fc1f25-4453-4e22-9033-70bcfc943d80)
 
 VirusTotal identifies the discovered `.bisis` file as belonging to the "portscan" family, aligning with Diicot’s use of the `.bisis` payload as a port scanner.
 
