@@ -7,6 +7,8 @@
 
 This report summarizes the findings of a threat hunting investigation conducted in response to a Microsoft Azure Safeguards Team abuse notice. Microsoft flagged the IP address `20.81.228.191`, associated with the Azure VM `sakel-lunix-2`, for brute-force activity. The investigation confirms the abuse report, identifies the initial compromise point, and details the attacker’s activity within the CyberRange network, including persistence mechanisms, deployed payloads, C2 communication, and lateral movement.
 
+![image](https://github.com/user-attachments/assets/9181f1d4-8aee-43eb-9847-12d558be0774)
+
 ## Validation of Abuse Claim
 
 ### Hypothesis:
