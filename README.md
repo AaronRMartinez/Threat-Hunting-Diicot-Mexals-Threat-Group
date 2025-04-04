@@ -238,6 +238,8 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 ```
 
+![UpdateFileMultiple](https://github.com/user-attachments/assets/fc384381-1dbb-49ed-9a1a-3197ace2bdf4)
+
 The query returned three more entries that shared the same file name, folder path, and hashes. The `Update` file was created in three other devices, all initiated by distinct file names and command lines. The following is information of each respective log in chronological order,
 
 ---
@@ -310,7 +312,11 @@ DeviceFileEvents
 | project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA256, InitiatingProcessAccountDomain, InitiatingProcessAccountName
 ```
 
+![CacheMaliciousFile](https://github.com/user-attachments/assets/ff26c9ea-89d7-423a-a69b-219386ba0d8e)
+
 The query returned four logs in total, indicating that four previous devices contained the malicious Update payload. The initiating domain name and account name remained the same for each respective device. In the latest log, the cache file was created by the same Update file found in all four machines. To verify if these files were malicious or not, the SHA256 hash was taken and cross referenced with VirusTotal. Searching the hash with the online database gave me a positive result for the first three files.
+
+![image](https://github.com/user-attachments/assets/7c162e48-f706-449c-a17a-63c469987c22)
 
 Devices:
 
@@ -328,7 +334,11 @@ However the latest cache file created on device, `sakel-lunix-2.p2zfvso05mlezjev
 
 * SHA256: `8c2a00409bad8033fec13fc6ffe4aa4732d80400072043b71ceb57db37244129`
 
-Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another positive result. Another note to add for the first three created cache files, all three were created with an initiating process command line of,
+Using VirusTotal again to confirm if the suspected file was malicious or not, resulted in another positive result. 
+
+![image](https://github.com/user-attachments/assets/8bd25839-97a9-419c-8b85-4eae1fe3bee1)
+
+Another note to add for the first three created cache files, all three were created with an initiating process command line of,
 
 ```bash
 scp -qt /tmp/cache
