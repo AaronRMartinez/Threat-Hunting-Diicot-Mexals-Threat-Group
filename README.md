@@ -385,6 +385,8 @@ DeviceFileEvents
 
 ![BisisMaliciousFile](https://github.com/user-attachments/assets/0cb06188-ed5d-451f-907b-7d7a4eda9eb7)
 
+![bisisSSHAttack](https://github.com/user-attachments/assets/ebde197c-1a0f-42c0-b351-06b50c12f3cb)
+
 The query returned four logs identifying devices that contained the malicious `Update` payload, also held the `.bisis` file.
 
 1. `linux-program-fix.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net`
